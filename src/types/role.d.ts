@@ -1,0 +1,1 @@
+type IRole = "MANAGER" | "USER" | "FINANCE";

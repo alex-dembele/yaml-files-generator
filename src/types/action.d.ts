@@ -1,0 +1,1 @@
+type IAction = "CREATE" | "UPDATE" | "VIEW" | "SELECT";

@@ -1,0 +1,35 @@
+Now after selecting a service, case of bulkpayment here we have the page that show the service detail on the header and the list of information required for the process, take note that not all data has a template document has  to be  downloaded by the user , fill inorder to upload later, some are just input fileds. so it required infor has for now 2 type a document or an input field. make sure to implement the types and also the list of required documents comes from the api so use fake data and use the screenshoot provided.
+
+Workflow
+login
+get-user-org-onboardings
+if(get-user-org-onboardings === 0) {
+    show welcome message and list service to which he can perform an onboardings
+} else {
+    show user's services to which he has onboard with thier status is there are complete, in-progress, pending-validations and a button to add new a new onboarding to his list
+    ----> clicking on the add new onboarding will show a page with all services where he has no onboarding yet and from there selecting a service proceed to the step to showing him required documents and so on
+}
+==========================================================================
+
+Am tryna to implement the rendering of a transaction, currently here is the given component and take not that a transaction has 4 status ie, CREATED, PENDING, REJECTED and APPROVED, and here is the interface,
+
+export type ITransaction = {
+    id: number,
+    status: "PENDING" | "CREATED" | "REJECTED" | "APPROVED",
+    submit_document?: string,
+    document: IDocument,
+}
+
+export type IDocument = {
+    id: string;
+    name: string;
+
+   template_url: string,     type: 'document' | 'input';     description?: string;     hasTemplate?: boolean;     required: boolean;     inputType?: 'text' | 'email' | 'tel' | 'textarea';     placeholder?: string; }
+
+When the status is at CREATED, the user can enter filled submit_document, but this depend of the type of document to entered, when its a document, he can upload a file (This operation is independent and return the file url in the data response), later run he can submit the update transaction to change its status to PENDING, when its a file with a tempate, he can download the document template and later on upload the file and the procedure works the same, Also, when its a input, he has the  input text to fill and still click on a button to update the transaction and its status changing to PENDING and also the user has the possiblity to view what he uploaded,
+
+Take note about the feature to download the template document since its a template_url that is behind the button and it should download the file when the user wants to download the file.
+
+Now on the otherside, the admin will want to validate the transaction which status is Pending by having to view it and choose whether to reject or approved it.
+
+Make sure to structure the components and the process as explained
