@@ -1,5 +1,5 @@
 
-import { en } from './locals'; // Your translation files
+import { en } from './index'; // Your translation files
 
 // Advanced type to extract all possible key paths
 // type Paths<T, D extends number = 10> = [D] extends [never]

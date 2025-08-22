@@ -1,8 +1,7 @@
 import { API_CONFIG, apiClient } from "@/api";
-import { IClient, IRecommendedPerson } from "@/routes/clients-page";
+
 
 const modelName = "clients";
-
 const api_urls = {
     getMany: () => API_CONFIG.buildUrl(`/${modelName}`),
     getOne: (id: number) => API_CONFIG.buildUrl(`/${modelName}/${id}`),

@@ -6,7 +6,8 @@ import './index.css'
 import 'react-toastify/dist/ReactToastify.css';
 
 // LOCALS
-import "./translations.config.ts";
+import "./translations";
+
 // Providers
 import ReduxPersistProvider from '@/providers/ReduxPersistProvider.tsx';
 import TanStackQueryProvider from './providers/TanStackQueryProvider.tsx';

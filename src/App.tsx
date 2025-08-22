@@ -1,6 +1,6 @@
 import { ToastContainer } from "react-toastify";
 import { Toaster } from "@/components/ui/toaster";
-import RenderRoutes from "./render-routes";
+import RenderRoutes from "./route.config";
 const App = () => {
     return (
         <>
