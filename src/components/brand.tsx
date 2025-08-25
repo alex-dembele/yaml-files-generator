@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
-import env from "@/env";
+import carrefourLogo from "@/assets/logo/carrefour-logo.png"
 export const Brand = () => {
     return (
         <Link to={"/"}>
             <div className=''>
-                <img src={env.APP_LOGO_URL} className="h-[3rem] " alt='Nexah' />
+                <img src={carrefourLogo} className="h-[3rem] " alt='Carrefour' />
             </div>
         </Link>
     );

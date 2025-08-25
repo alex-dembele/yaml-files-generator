@@ -15,6 +15,6 @@ export default {
     APP_USE_MOCK_API: import.meta.env.VITE_APP_USE_MOCK_API ?? 'false',
     APP_COLOR_PRIMARY_DEFAULT: import.meta.env.VITE_APP_COLOR_PRIMARY_DEFAULT ?? "5EB034",
     APP_COLOR_SECONDARY_DEFAULT: import.meta.env.VITE_APP_COLOR_SECONDARY_DEFAULT ?? "D39C6F",
-    APP_LOGO_URL: import.meta.env.VITE_APP_LOGO_URL ?? "https://nxh-pic.s3.us-east-2.amazonaws.com/wafa-logo.png",
+    APP_LOGO_URL: import.meta.env.VITE_APP_LOGO_URL ?? "https://nxh-pic.s3.us-east-2.amazonaws.com/carrefour-logo.png",
     APP_BACKGROUND_URL: import.meta.env.VITE_APP_BACKGROUND_URL ?? "https://nxh-pic.s3.us-east-2.amazonaws.com/wafa-background.png",
 };

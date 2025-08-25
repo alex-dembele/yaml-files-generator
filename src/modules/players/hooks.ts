@@ -1,5 +1,6 @@
-import { useMutation } from '@tanstack/react-query';
+import { MutationOptions, useMutation } from '@tanstack/react-query';
 import PlayersApi, { IPlayerCheckIdentityRequest, IPlayerCheckIdentityResponse, IPlayerUpdateInfosRequest, IPlayerUpdateInfosResponse } from './api';
+import { useNavigate, useParams } from 'react-router-dom';
 
 /**
  * Comprehensive hook for managing payment labels data, combining pagination, query parameters, and API calls
@@ -10,21 +11,34 @@ import PlayersApi, { IPlayerCheckIdentityRequest, IPlayerCheckIdentityResponse, 
 */
 
 // TODO Change this implementation to use mutatation hooks
-const useCheckPlayerIdentiy = (options: any) => {
-    const { onSuccess: customOnSuccess, ...restOptions } = options;
+const useCheckPlayerIdentity = (
+    options?: MutationOptions<IPlayerCheckIdentityResponse, Error, IPlayerCheckIdentityRequest>
+) => {
+    const { onSuccess: customOnSuccess, ...restOptions } = options || {};
+    const navigate = useNavigate();
+    const { salespointUUID } = useParams();
     return useMutation<IPlayerCheckIdentityResponse, Error, IPlayerCheckIdentityRequest>({
-        mutationFn: (payload) => PlayersApi.checkIdentity(payload),
+        mutationFn: async (payload) => await PlayersApi.checkIdentity(payload),
         onSuccess: (data, variables, context) => {
+            const { is_new_user, uuid } = data;
+            if (is_new_user) {
+                navigate(`/${salespointUUID}/identity-check/${uuid}/update-info`);
+            } else {
+                navigate(`/${salespointUUID}/identity-check/${uuid}/scan-receipt `);
+            }
             // Then call taxe-provided onSuccess if available
             if (customOnSuccess) {
                 customOnSuccess(data, variables, context);
+
             }
         },
         ...restOptions
     });
 };
 
-const usePlayerUpdateInfos = (options: any) => {
+const usePlayerUpdateInfos = (
+    options: MutationOptions<IPlayerUpdateInfosResponse, Error, IPlayerUpdateInfosRequest>
+) => {
     const { onSuccess: customOnSuccess, ...restOptions } = options;
     return useMutation<IPlayerUpdateInfosResponse, Error, IPlayerUpdateInfosRequest>({
         mutationFn: (payload) => PlayersApi.updateInfos(payload),
@@ -40,7 +54,7 @@ const usePlayerUpdateInfos = (options: any) => {
 
 
 
-export default {
-    useCheckPlayerIdentiy,
+export {
+    useCheckPlayerIdentity,
     usePlayerUpdateInfos
 }

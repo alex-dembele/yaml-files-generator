@@ -4,12 +4,12 @@ import Loadable from "./components/loadable";
 import AppLayout from "./layouts/app";
 import CheckSalespointPage from "./pages/check-salespoint-page";
 import IdentityCheckPage from "./pages/identity-check-page";
-import UpdateInfosPage from "./pages/update-info-page";
 import ScanRecieptPage from "./pages/scan-reciept-page";
 import TombolaCompletePage from "./pages/tombolo-complete-page";
 
 import { authRoutes } from "@/auth/auth.route";
 import { errorsRoutes } from "@/errors/errors.route";
+import UpdateInfoPage from "./pages/update-info-page";
 
 const routes = [
     {
@@ -31,7 +31,7 @@ export default function RenderRoutes() {
                 path="/" element={<Loadable isPage component={<AppLayout />} />} >
                 <Route path="/:salespointUUID" element={<CheckSalespointPage />} />
                 <Route path="/:salespointUUID/identity-check" element={<IdentityCheckPage />} />
-                <Route path="/:salespointUUID/identity-check/:identityUUID/update-info" element={<UpdateInfosPage />} />
+                <Route path="/:salespointUUID/identity-check/:identityUUID/update-info" element={<UpdateInfoPage />} />
                 <Route path="/:salespointUUID/identity-check/:identityUUID/scan-receipt" element={<ScanRecieptPage />} />
                 <Route path="/:salespointUUID/identity-check/:identityUUID/tombola-complete" element={<TombolaCompletePage />} />
             </Route>

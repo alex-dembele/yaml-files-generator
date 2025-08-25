@@ -1,24 +1,39 @@
 import { useState, useRef, useCallback } from 'react';
 import { Camera, X, CheckCircle, AlertCircle, Upload, Loader2 } from 'lucide-react';
 
-const HomePage = () => {
+const ReceiptScanner = ({
+    onReceiptImageProcess,
+    onError,
+    className = "",
+    showTitle = true,
+    title = "Scannez votre facture",
+    subtitle = "Scan your receipts and extract information automatically",
+    captureButtonText = "Capture Photo",
+    processButtonText = "Process Receipt",
+    retakeButtonText = "Retake Photo",
+    scanAnotherButtonText = "Scan Another Receipt",
+    startScanButtonText = "Start Scanning"
+}) => {
     const [isProcessing, setIsProcessing] = useState(false);
     const [cameraStream, setCameraStream] = useState(null);
     const [showCamera, setShowCamera] = useState(false);
     const [capturedImage, setCapturedImage] = useState(null);
-    const [receiptData, setReceiptData] = useState(null);
     const [error, setError] = useState('');
-    const [permissionStatus, setPermissionStatus] = useState('prompt'); // 'granted', 'denied', 'prompt'
+    const [permissionStatus, setPermissionStatus] = useState('prompt');
     const [isVideoReady, setIsVideoReady] = useState(false);
 
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
 
+    // Handle errors internally and also notify parent if callback provided
+    const handleError = useCallback((errorMessage) => {
+        setError(errorMessage);
+        if (onError) {
+            onError(errorMessage);
+        }
+    }, [onError]);
 
-
-    // Assumes you have: videoRef, setPermissionStatus, setError, setIsVideoReady, setCameraStream, setShowCamera
     const checkCameraPermission = useCallback(async () => {
-        // Quick platform checks
         if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
             console.warn('Media Devices API not supported');
             setPermissionStatus('unsupported');
@@ -26,27 +41,22 @@ const HomePage = () => {
         }
 
         if (!window.isSecureContext) {
-            // getUserMedia and real permission prompts usually require HTTPS (or localhost)
             console.warn('Insecure context - camera is blocked on most browsers (use HTTPS).');
             setPermissionStatus('insecure');
             return 'insecure';
         }
 
-        // Try Permissions API if available (may throw if "camera" isn't recognized)
         if (navigator.permissions && navigator.permissions.query) {
             try {
                 const perm = await navigator.permissions.query({ name: 'camera' });
                 setPermissionStatus(perm.state);
-                // update if permission changes later
                 perm.onchange = () => setPermissionStatus(perm.state);
                 return perm.state;
             } catch (e) {
-                // Some browsers (Safari) or older implementations throw; fall back below
                 console.debug('Permissions API camera query failed or not supported:', e);
             }
         }
 
-        // Fallback: use enumerateDevices to infer permission state:
         try {
             const devices = await navigator.mediaDevices.enumerateDevices();
             const hasVideoInput = devices.some(d => d.kind === 'videoinput');
@@ -54,7 +64,6 @@ const HomePage = () => {
                 setPermissionStatus('notfound');
                 return 'notfound';
             }
-            // If device labels are present then permission was previously granted.
             const labelsAvailable = devices.some(d => d.label && d.label.length > 0);
             setPermissionStatus(labelsAvailable ? 'granted' : 'prompt');
             return labelsAvailable ? 'granted' : 'prompt';
@@ -69,14 +78,13 @@ const HomePage = () => {
         setError('');
         setIsVideoReady(false);
 
-        // Must be secure and a user gesture triggered this function
         if (!window.isSecureContext) {
-            setError('Camera requires a secure context (HTTPS or localhost).');
+            handleError('Camera requires a secure context (HTTPS or localhost).');
             setPermissionStatus('insecure');
             return;
         }
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            setError('Camera API not supported in this browser.');
+            handleError('Camera API not supported in this browser.');
             setPermissionStatus('unsupported');
             return;
         }
@@ -84,43 +92,35 @@ const HomePage = () => {
         try {
             let stream = null;
 
-            // Try ideal constraints first (environment facing)
             try {
                 stream = await navigator.mediaDevices.getUserMedia({
                     video: {
                         facingMode: { ideal: 'environment' },
-                        width: { ideal: 1280, min: 640 },
-                        height: { ideal: 720, min: 480 }
+                        // width: { ideal: 1280, min: 640 },
+                        // height: { ideal: 1120, min: 480 }
                     },
                     audio: false
                 });
             } catch (constraintErr) {
-                // If advanced constraints fail, try a simpler one (broad compatibility)
                 console.info('Advanced constraints failed, falling back to basic video constraint.', constraintErr);
                 stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
             }
 
-            // Save stream and update UI state
             setCameraStream(stream);
             setPermissionStatus('granted');
             setShowCamera(true);
 
-            // Attach stream to video element and ensure mobile-friendly attributes
             const setupVideo = () => {
                 if (!videoRef.current) return;
 
-                // Mobile Safari needs playsinline to avoid fullscreen/autoplay issues
                 try { videoRef.current.setAttribute('playsinline', ''); } catch (e) { }
                 try { videoRef.current.setAttribute('webkit-playsinline', ''); } catch (e) { }
-
-                // Muted helps autoplay/play policies on some mobile browsers
                 try { videoRef.current.muted = true; } catch (e) { }
 
                 videoRef.current.srcObject = stream;
-                // load + play
                 try {
                     videoRef.current.load();
-                } catch (e) { /* ignore */ }
+                } catch (e) { }
 
                 const playPromise = videoRef.current.play();
                 if (playPromise !== undefined) {
@@ -131,78 +131,68 @@ const HomePage = () => {
                         })
                         .catch(playErr => {
                             console.warn('Initial play() failed, retrying once', playErr);
-                            // retry once after short delay (useful for some mobile quirks)
                             setTimeout(() => {
                                 if (videoRef.current) {
                                     videoRef.current.play().catch(e => {
                                         console.error('Retry play failed:', e);
-                                        // still consider stream ready if tracks exist
                                         setIsVideoReady(stream.getVideoTracks().length > 0);
                                     });
                                 }
                             }, 300);
                         });
                 } else {
-                    // If play() returns undefined, mark as ready
                     setIsVideoReady(true);
                 }
             };
 
-            // If ref exists attach immediately, otherwise wait briefly
             if (videoRef.current) setupVideo();
             else setTimeout(setupVideo, 200);
 
         } catch (err) {
             console.error('Camera access error:', err);
-            // Common error names: NotAllowedError, NotFoundError, NotReadableError, OverconstrainedError
             if (err.name === 'NotAllowedError' || err.name === 'SecurityError') {
                 setPermissionStatus('denied');
-                setError('Camera permission denied. Please allow camera access in your browser or app settings.');
+                handleError('Camera permission denied. Please allow camera access in your browser or app settings.');
             } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
                 setPermissionStatus('notfound');
-                setError('No camera found on this device.');
+                handleError('No camera found on this device.');
             } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
                 setPermissionStatus('inuse');
-                setError('Camera is already in use by another application.');
+                handleError('Camera is already in use by another application.');
             } else if (err.name === 'OverconstrainedError' || err.name === 'ConstraintNotSatisfiedError') {
                 setPermissionStatus('constrained');
-                setError('No camera meets the requested constraints. Trying with basic settings failed.');
+                handleError('No camera meets the requested constraints. Trying with basic settings failed.');
             } else {
                 setPermissionStatus('error');
-                setError('Failed to access camera. Please try again.');
+                handleError('Failed to access camera. Please try again.');
             }
         }
-    }, [videoRef, setCameraStream, setPermissionStatus, setError, setIsVideoReady, setShowCamera]);
+    }, [videoRef, setCameraStream, setPermissionStatus, handleError, setIsVideoReady, setShowCamera]);
 
-
-    // Stop camera stream
     const stopCamera = useCallback(() => {
         if (cameraStream) {
             cameraStream.getTracks().forEach(track => track.stop());
             setCameraStream(null);
         }
         setShowCamera(false);
-        // setCapturedImage(null);
         setIsVideoReady(false);
     }, [cameraStream]);
 
-    // Capture image from video
     const captureImage = useCallback(() => {
         console.log('Capture image clicked');
 
         if (!videoRef.current || !canvasRef.current) {
             console.error('Video or canvas ref not available');
-            setError('Unable to capture image. Please try again.');
+            handleError('Unable to capture image. Please try again.');
             return;
         }
 
         const video = videoRef.current;
         const canvas = canvasRef.current;
 
-        // Check if video is actually playing and has dimensions
         if (video.videoWidth === 0 || video.videoHeight === 0) {
             console.error('Video has no dimensions:', video.videoWidth, 'x', video.videoHeight);
-            setError('Camera not ready. Please wait a moment and try again.');
+            handleError('Camera not ready. Please wait a moment and try again.');
             return;
         }
 
@@ -210,15 +200,10 @@ const HomePage = () => {
 
         try {
             const ctx = canvas.getContext('2d');
-
-            // Set canvas dimensions to match video
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
-
-            // Draw video frame to canvas
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            // Convert to blob
             canvas.toBlob((blob) => {
                 if (blob) {
                     console.log('Image captured successfully, blob size:', blob.size);
@@ -226,86 +211,54 @@ const HomePage = () => {
                     console.log('Image URL created:', imageUrl);
                     setCapturedImage({ blob, url: imageUrl });
                     stopCamera();
-                    // processReceipt(blob)
                 } else {
                     console.error('Failed to create blob from canvas');
-                    setError('Failed to capture image. Please try again.');
+                    handleError('Failed to capture image. Please try again.');
                 }
             }, 'image/jpeg', 0.8);
 
         } catch (error) {
             console.error('Error capturing image:', error);
-            setError('Error capturing image. Please try again.');
+            handleError('Error capturing image. Please try again.');
         }
-    }, [stopCamera]);
+    }, [stopCamera, handleError]);
 
-    // Simulate API call for receipt processing
-    const processReceipt = useCallback(async (imageBlob) => {
+    const processImage = useCallback(async (imageBlob) => {
         setIsProcessing(true);
         setError('');
-        setReceiptData(null);
 
         try {
-            // Simulate API delay
-            await new Promise(resolve => setTimeout(resolve, 2000));
-
-            // Simulate random success/failure (70% success rate)
-            const isSuccess = Math.random() > 0.3;
-
-            if (!isSuccess) {
-                throw new Error('Image quality too poor. Please retake the photo with better lighting and focus.');
+            // Call the parent's processing function
+            if (onReceiptImageProcess) {
+                await onReceiptImageProcess(imageBlob);
             }
-
-            // Fake successful receipt data
-            const fakeReceiptData = {
-                store: 'SuperMart Express',
-                address: '123 Main Street, City Center',
-                date: new Date().toLocaleDateString(),
-                time: new Date().toLocaleTimeString(),
-                receiptNumber: `R${Math.floor(Math.random() * 100000).toString().padStart(5, '0')}`,
-                items: [
-                    { name: 'Organic Bananas', quantity: 2, price: 3.98 },
-                    { name: 'Whole Milk 1L', quantity: 1, price: 2.49 },
-                    { name: 'Bread - Whole Wheat', quantity: 1, price: 2.99 },
-                    { name: 'Greek Yogurt', quantity: 3, price: 5.97 },
-                    { name: 'Chicken Breast 1kg', quantity: 1, price: 12.99 }
-                ],
-                subtotal: 28.42,
-                tax: 2.27,
-                total: 30.69,
-                paymentMethod: 'Credit Card',
-                cashier: 'Employee #' + Math.floor(Math.random() * 100)
-            };
-
-            setReceiptData(fakeReceiptData);
         } catch (err) {
-            setError(err.message);
+            console.error('Receipt processing error:', err);
+            handleError(err.message || 'Failed to process receipt. Please try again.');
         } finally {
             setIsProcessing(false);
         }
-    }, []);
+    }, [onReceiptImageProcess, handleError]);
 
-    // Reset all states
     const resetScanner = useCallback(() => {
-        // Clean up captured image URL to prevent memory leaks
         if (capturedImage?.url) {
             URL.revokeObjectURL(capturedImage.url);
         }
-
         setCapturedImage(null);
-        setReceiptData(null);
         setError('');
         setIsProcessing(false);
         stopCamera();
     }, [capturedImage, stopCamera]);
 
     return (
-        <div className="min-h-screen bg-gray-50 p-4">
-            <div className="max-w-4xl mx-auto">
-                <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome to Receipt Scanner</h1>
-                    <p className="text-gray-600">Scan your receipts and extract information automatically</p>
-                </div>
+        <div className={` flex flex-col flex-grow  ${className}`}>
+            <div className=" -300 flex flex-col flex-grow ">
+                {showTitle && (
+                    <div className="text-center mb-8">
+                        <h1 className="text-xl font-bold text-gray-50 mb-2">{title}</h1>
+                        {/* <p className="text-gray-600">{subtitle}</p> */}
+                    </div>
+                )}
 
                 {/* Error Display */}
                 {error && (
@@ -318,14 +271,12 @@ const HomePage = () => {
                     </div>
                 )}
 
-                {/* Main Content */}
-                {!showCamera && !capturedImage && !receiptData && (
-                    <div className="text-center">
-                        <div className="bg-white rounded-lg shadow-lg p-8 mb-6">
+                {/* Initial State - Start Scanning */}
+                {!showCamera && !capturedImage && (
+                    <div className="text-center bg-white rounded-lg">
+                        <div className=" rounded-lg shadow-lg p-8 mb-6">
                             <Camera className="mx-auto mb-4 text-blue-500" size={64} />
-                            <p className="text-gray-600 mb-6">
-                                Take a photo of your receipt to extract and organize the information automatically.
-                            </p>
+
                             <button
                                 onClick={async () => {
                                     await checkCameraPermission();
@@ -335,7 +286,7 @@ const HomePage = () => {
                                 className="bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-medium flex items-center space-x-2 mx-auto transition-colors"
                             >
                                 <Camera size={20} />
-                                <span>Start Scanning</span>
+                                <span>{startScanButtonText}</span>
                             </button>
                             {permissionStatus === 'denied' && (
                                 <p className="text-red-600 text-sm mt-2">
@@ -348,25 +299,25 @@ const HomePage = () => {
 
                 {/* Camera View */}
                 {showCamera && (
-                    <div className="bg-white rounded-lg shadow-lg p-4">
-                        <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-xl font-semibold">Position your receipt in the frame</h2>
+                    <div className="rounded-lg shadow-lg flex-grow flex flex-col  ">
+                        {/* <div className="flex justify-between items-center mb-4">
                             <button
                                 onClick={stopCamera}
                                 className="text-gray-500 hover:text-gray-700 p-2"
                             >
                                 <X size={24} />
                             </button>
-                        </div>
+                        </div> */}
 
-                        <div className="relative">
+                        <div className="relative flex flex-grow flex-col ">
                             <video
                                 ref={videoRef}
                                 autoPlay
+
                                 playsInline
                                 muted
-                                className="w-full rounded-lg bg-gray-900"
-                                style={{ maxHeight: '500px', minHeight: '300px' }}
+                                className="w-full rounded bg-gray-900 flex-grow object-cover"
+                                // style={{ maxHeight: '730px', minHeight: '730px' }}
                                 onLoadedMetadata={(e) => {
                                     console.log('Video metadata loaded', e.target.videoWidth, 'x', e.target.videoHeight);
                                     if (videoRef.current) {
@@ -396,17 +347,15 @@ const HomePage = () => {
                                 }}
                                 onError={(e) => {
                                     console.error('Video error:', e);
-                                    setError('Error loading camera feed. Please try again.');
+                                    handleError('Error loading camera feed. Please try again.');
                                 }}
                                 onLoadStart={() => {
                                     console.log('Video load started');
                                 }}
                             />
 
-                            {/* Camera overlay for better framing */}
                             <div className="absolute inset-4 border-2 border-white border-dashed rounded-lg pointer-events-none opacity-70"></div>
 
-                            {/* Loading overlay if video not ready */}
                             {!isVideoReady && (
                                 <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-75 rounded-lg">
                                     <div className="text-white text-center">
@@ -442,7 +391,7 @@ const HomePage = () => {
                                 className="bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-8 py-3 rounded-full font-medium flex items-center space-x-2 transition-colors"
                             >
                                 <Camera size={20} />
-                                <span>Capture Photo</span>
+                                <span>{captureButtonText}</span>
                             </button>
                         </div>
                     </div>
@@ -451,7 +400,6 @@ const HomePage = () => {
                 {/* Captured Image Preview */}
                 {capturedImage && (
                     <div className="bg-white rounded-lg shadow-lg p-6">
-
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-xl font-semibold">Review Your Photo</h2>
                             <button
@@ -474,7 +422,7 @@ const HomePage = () => {
                                 <button
                                     onClick={() => {
                                         console.log('Process receipt button clicked');
-                                        processReceipt(capturedImage.blob);
+                                        processImage(capturedImage.blob);
                                     }}
                                     disabled={isProcessing}
                                     className="bg-green-500 hover:bg-green-600 disabled:bg-green-400 text-white px-6 py-3 rounded-lg font-medium flex items-center space-x-2 transition-colors"
@@ -487,7 +435,7 @@ const HomePage = () => {
                                     ) : (
                                         <>
                                             <Upload size={20} />
-                                            <span>Process Receipt</span>
+                                            <span>{processButtonText}</span>
                                         </>
                                     )}
                                 </button>
@@ -504,105 +452,161 @@ const HomePage = () => {
                                     disabled={isProcessing}
                                     className="bg-gray-500 hover:bg-gray-600 disabled:bg-gray-400 text-white px-6 py-3 rounded-lg font-medium transition-colors"
                                 >
-                                    Retake Photo
+                                    {retakeButtonText}
                                 </button>
                             </div>
                         </div>
+
+                        {/* Success message and scan another button */}
+                        {!isProcessing && (
+                            <div className="mt-6 text-center">
+                                <button
+                                    onClick={resetScanner}
+                                    className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                                >
+                                    {scanAnotherButtonText}
+                                </button>
+                            </div>
+                        )}
                     </div>
                 )}
 
-                {/* Receipt Data Display */}
-                {receiptData && (
-                    <div className="bg-white rounded-lg shadow-lg p-6">
-                        <div className="flex justify-between items-center mb-6">
-                            <div className="flex items-center space-x-2">
-                                <CheckCircle className="text-green-500" size={24} />
-                                <h2 className="text-xl font-semibold text-green-700">Receipt Processed Successfully</h2>
-                            </div>
-                            <button
-                                onClick={resetScanner}
-                                className="text-gray-500 hover:text-gray-700 p-2"
-                            >
-                                <X size={24} />
-                            </button>
-                        </div>
-
-                        <div className="grid md:grid-cols-2 gap-6">
-                            {/* Store Information */}
-                            <div className="bg-gray-50 rounded-lg p-4">
-                                <h3 className="font-semibold text-gray-800 mb-3">Store Information</h3>
-                                <div className="space-y-2 text-sm">
-                                    <p><span className="font-medium">Store:</span> {receiptData.store}</p>
-                                    <p><span className="font-medium">Address:</span> {receiptData.address}</p>
-                                    <p><span className="font-medium">Date:</span> {receiptData.date}</p>
-                                    <p><span className="font-medium">Time:</span> {receiptData.time}</p>
-                                    <p><span className="font-medium">Receipt #:</span> {receiptData.receiptNumber}</p>
-                                    <p><span className="font-medium">Cashier:</span> {receiptData.cashier}</p>
-                                </div>
-                            </div>
-
-                            {/* Payment Summary */}
-                            <div className="bg-gray-50 rounded-lg p-4">
-                                <h3 className="font-semibold text-gray-800 mb-3">Payment Summary</h3>
-                                <div className="space-y-2 text-sm">
-                                    <div className="flex justify-between">
-                                        <span>Subtotal:</span>
-                                        <span>${receiptData.subtotal.toFixed(2)}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span>Tax:</span>
-                                        <span>${receiptData.tax.toFixed(2)}</span>
-                                    </div>
-                                    <div className="border-t pt-2 flex justify-between font-semibold">
-                                        <span>Total:</span>
-                                        <span>${receiptData.total.toFixed(2)}</span>
-                                    </div>
-                                    <p className="mt-2"><span className="font-medium">Payment Method:</span> {receiptData.paymentMethod}</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Items List */}
-                        <div className="mt-6">
-                            <h3 className="font-semibold text-gray-800 mb-3">Items Purchased</h3>
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-sm">
-                                    <thead className="bg-gray-50">
-                                        <tr>
-                                            <th className="text-left p-3">Item</th>
-                                            <th className="text-center p-3">Qty</th>
-                                            <th className="text-right p-3">Price</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y">
-                                        {receiptData.items.map((item, index) => (
-                                            <tr key={index}>
-                                                <td className="p-3">{item.name}</td>
-                                                <td className="p-3 text-center">{item.quantity}</td>
-                                                <td className="p-3 text-right">${item.price.toFixed(2)}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <div className="mt-6 text-center">
-                            <button
-                                onClick={resetScanner}
-                                className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-                            >
-                                Scan Another Receipt
-                            </button>
-                        </div>
-                    </div>
-                )}
-
-                {/* Hidden canvas for image processing */}
                 <canvas ref={canvasRef} className="hidden" />
             </div>
         </div>
     );
 };
 
-export default HomePage;
+export default ReceiptScanner
+
+// Demo component showing how to use the reusable ReceiptScanner
+const ReceiptScannerDemo = () => {
+    const [processedReceipts, setProcessedReceipts] = useState([]);
+    const [isProcessing, setIsProcessing] = useState(false);
+
+    // Mock receipt processing function that the parent provides
+    const handleReceiptImageProcess = async (imageBlob) => {
+        setIsProcessing(true);
+
+        try {
+            // Simulate API call delay
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            // Simulate random success/failure (80% success rate)
+            const isSuccess = Math.random() > 0.2;
+
+            if (!isSuccess) {
+                throw new Error('Image quality too poor. Please retake the photo with better lighting and focus.');
+            }
+
+            // Simulate successful receipt processing
+            const fakeReceiptData = {
+                id: Date.now(),
+                store: 'SuperMart Express',
+                address: '123 Main Street, City Center',
+                date: new Date().toLocaleDateString(),
+                time: new Date().toLocaleTimeString(),
+                receiptNumber: `R${Math.floor(Math.random() * 100000).toString().padStart(5, '0')}`,
+                items: [
+                    { name: 'Organic Bananas', quantity: 2, price: 3.98 },
+                    { name: 'Whole Milk 1L', quantity: 1, price: 2.49 },
+                    { name: 'Bread - Whole Wheat', quantity: 1, price: 2.99 },
+                    { name: 'Greek Yogurt', quantity: 3, price: 5.97 },
+                    { name: 'Chicken Breast 1kg', quantity: 1, price: 12.99 }
+                ],
+                subtotal: 28.42,
+                tax: 2.27,
+                total: 30.69,
+                paymentMethod: 'Credit Card',
+                cashier: 'Employee #' + Math.floor(Math.random() * 100),
+                processedAt: new Date().toISOString()
+            };
+
+            // Add to processed receipts list
+            setProcessedReceipts(prev => [fakeReceiptData, ...prev]);
+
+            console.log('Receipt processed successfully:', fakeReceiptData);
+        } finally {
+            setIsProcessing(false);
+        }
+    };
+
+    const handleError = (errorMessage) => {
+        console.error('Receipt Scanner Error:', errorMessage);
+        // You could show a toast notification here or handle the error in other ways
+    };
+
+    return (
+        <div className="min-h-screen bg-gray-100">
+            <div className="grid lg:grid-cols-2 gap-6 h-screen">
+                {/* Receipt Scanner */}
+                <div className="overflow-y-auto">
+                    <ReceiptScanner
+                        onReceiptImageProcess={handleReceiptImageProcess}
+                        onError={handleError}
+                        className="min-h-0 bg-white"
+                        showTitle={true}
+                        title="Smart Receipt Scanner"
+                        subtitle="Scan and digitize your receipts instantly"
+                        startScanButtonText="Start Scanning Receipt"
+                        processButtonText="Extract Receipt Data"
+                    />
+                </div>
+
+                {/* Processed Receipts Display */}
+                <div className="p-6 overflow-y-auto bg-white">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-6">
+                        Processed Receipts ({processedReceipts.length})
+                    </h2>
+
+                    {isProcessing && (
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4 flex items-center space-x-3">
+                            <Loader2 className="animate-spin text-blue-500" size={20} />
+                            <div>
+                                <p className="text-blue-800 font-medium">Processing Receipt</p>
+                                <p className="text-blue-600 text-sm">Extracting data from your image...</p>
+                            </div>
+                        </div>
+                    )}
+
+                    {processedReceipts.length === 0 && !isProcessing && (
+                        <div className="text-center py-12">
+                            <Upload className="mx-auto mb-4 text-gray-400" size={48} />
+                            <p className="text-gray-500">No receipts processed yet.</p>
+                            <p className="text-gray-400 text-sm">Scan a receipt to get started!</p>
+                        </div>
+                    )}
+
+                    <div className="space-y-4">
+                        {processedReceipts.map((receipt) => (
+                            <div key={receipt.id} className="bg-gray-50 rounded-lg p-4 border">
+                                <div className="flex justify-between items-start mb-3">
+                                    <div>
+                                        <h3 className="font-semibold text-gray-800">{receipt.store}</h3>
+                                        <p className="text-sm text-gray-600">{receipt.date} • {receipt.time}</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="font-bold text-lg text-green-600">${receipt.total.toFixed(2)}</p>
+                                        <p className="text-xs text-gray-500">#{receipt.receiptNumber}</p>
+                                    </div>
+                                </div>
+
+                                <div className="border-t pt-3">
+                                    <p className="text-sm text-gray-600 mb-2">{receipt.items.length} items purchased</p>
+                                    <div className="grid grid-cols-2 gap-2 text-xs">
+                                        <div>
+                                            <span className="text-gray-500">Subtotal:</span> ${receipt.subtotal.toFixed(2)}
+                                        </div>
+                                        <div>
+                                            <span className="text-gray-500">Tax:</span> ${receipt.tax.toFixed(2)}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};

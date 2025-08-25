@@ -11,14 +11,17 @@ import SalesPointsApi from './api';
  * @returns {Object} Combined payments service with CRUD, pagination, and filtering capabilities
 */
 
-export const useVerifyIdentity = (uuid: string) => {
+export const useSalespointVerifyIdentity = (uuid?: string) => {
     return useQuery({
         queryKey: ['salespoint-verify-identity', uuid],
-        queryFn: () => SalesPointsApi.verifyIdentity(uuid),
+        queryFn: async () => {
+            const res_data = await SalesPointsApi.verifyIdentity(uuid);
+            return res_data?.data;
+        },
         enabled: !!uuid // Only run if uuid is provided
     });
 };
 
 export default {
-    useVerifyIdentity
+    useSalespointVerifyIdentity
 }
