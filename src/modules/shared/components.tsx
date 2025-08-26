@@ -2,6 +2,7 @@
 import { ChevronLeft, ShoppingCart } from 'lucide-react';
 import carrefourPrimaryBg from '@/assets/images/carrefour-main-bg.png';
 import confettiImg from "@/assets/images/confettis.png";
+import { useTranslation } from 'react-i18next';
 
 // 1. Background Container with Color Overlay
 export const BackgroundContainer = ({
@@ -39,26 +40,29 @@ export const BackArrow = ({ onBack }: any) => {
 
 // 3. Step Indicator Component
 export const StepIndicator = ({ currentStep, totalSteps }: any) => {
+    const { t } = useTranslation();
     return (
         <div className="bg-red-500 text-white px-2 py-1 rounded-lg text-sm font-medium shadow-md">
-            Étape {currentStep} sur {totalSteps}
+            {t('shared_components.step_indicator.step_of', { currentStep: currentStep, totalSteps: totalSteps })}
         </div>
     );
 };
 
 export const StepCompleteIndicator = () => {
+    const { t } = useTranslation();
     return (
         <div className="bg-red-500 text-white px-2 py-1 rounded-lg text-sm font-medium shadow-md">
-            Terminé !
+            {t('shared_components.step_indicator_complete')}
         </div>
     );
 };
 
 export const StepCompletedCard = () => {
+    const { t } = useTranslation();
     return (
         <div className="bg-white rounded-2xl  shadow-lg px-8 py-3   text-center">
             <h2 className="text-lg font-semibold text-blue-800 mb-4 text-center">
-                Félicitations !
+                {t('shared_components.step_complete_card.title')}
             </h2>
             <div>
                 <img
@@ -68,7 +72,7 @@ export const StepCompletedCard = () => {
             </div>
             <div>
                 <h4 className='text-gray-600'>
-                    Votre participation a bien été enregistrée
+                    {t('shared_components.step_complete_card.description')}
                 </h4>
             </div>
         </div>
@@ -138,6 +142,7 @@ export const InputCard = ({
 
 // 6. Continue Button Component
 export const ContinueButton = ({ onContinue, disabled = false, text = "Continuer" }: any) => {
+    const { t } = useTranslation();
     return (
         <button
             onClick={onContinue}
@@ -147,7 +152,7 @@ export const ContinueButton = ({ onContinue, disabled = false, text = "Continuer
                 : 'bg-blue-950  text-white'
                 }`}
         >
-            {text}
+            {text ? text : t('shared_components.continue_btn.default_text')}
         </button>
     );
 };

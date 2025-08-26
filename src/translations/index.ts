@@ -2,6 +2,8 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import { deepMerge } from "@/helpers/deep-merge-translation-object";
 import { fr as layout_app_components_fr, en as layout_app_components_en } from "@/layouts/app/translation";
+import { local_fr } from "./contents/local_fr";
+import { local_en } from "./contents/local_en";
 
 
 export const fr = {
@@ -9,7 +11,7 @@ export const fr = {
 
     // Merge all module translations directly at the root level
     ...deepMerge(
-
+        local_fr
     )
 }
 
@@ -18,7 +20,7 @@ export const en = {
 
     // Merge all module translations directly at the root level
     ...deepMerge(
-
+        local_en
     )
 }
 

@@ -6,7 +6,6 @@ import ReceiptScanner from "@/modules/shared/RecieptScanner";
 const ScanRecieptPage = () => {
     const navigate = useNavigate();
     const { salespointUUID } = useParams();
-    // const scanReceiptMutation = useTombolaScanReceipt();
 
     const [currentStep,] = useState(4);
     const [progress,] = useState(88);
@@ -14,19 +13,6 @@ const ScanRecieptPage = () => {
     const handleBack = () => {
         navigate(`/${salespointUUID}`);
     };
-
-
-    // const handleReceiptProcess = async (imageBlob: Blob) => {
-    //     if (salespointUUID && identityUUID) {
-    //         const payload: ITombolaScanReceiptRequest = {
-    //             image: imageBlob,
-    //             salesPointId: salespointUUID,
-    //             clientId: identityUUID
-    //         }
-    //         scanReceiptMutation.mutate(payload)
-    //     }
-
-    // };
 
     return (
         <BackgroundContainer>

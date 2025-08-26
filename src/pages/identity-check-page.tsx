@@ -4,8 +4,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useCheckPlayerIdentity } from '@/modules/players/hooks'
 import { MoonLoader } from "react-spinners";
 import { IPlayerCheckIdentityRequest } from "@/modules/players/api";
+import { useTranslation } from "react-i18next";
 
 const IdentityCheckPage = () => {
+    const { t } = useTranslation();
     const { salespointUUID } = useParams();
     const navigate = useNavigate();
 
@@ -46,8 +48,8 @@ const IdentityCheckPage = () => {
                 {/* Input card */}
                 <InputCard
                     disabled={checkPlayerIdentityMutation.isPending}
-                    label="Quel est votre numéro de téléphone ?"
-                    placeholder="Entrer votre numéro"
+                    label={t("identity_check.input_card.label")}
+                    placeholder={t("identity_check.input_card.placeholder")}
                     value={inputValue}
                     onChange={handleInputChange}
                 />

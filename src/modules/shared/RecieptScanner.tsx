@@ -4,6 +4,7 @@ import { Camera, X, AlertCircle, Upload, Loader2 } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import { useTombolaScanReceipt } from '../tombola/hooks';
 import { ITombolaScanReceiptRequest } from '../tombola/api';
+import { useTranslation } from 'react-i18next';
 
 const ReceiptScanner = ({
     // onReceiptImageProcess,
@@ -11,15 +12,16 @@ const ReceiptScanner = ({
     // onError,
     className = "",
     showTitle = true,
-    title = "Scannez votre facture",
+    // title = "Scannez votre facture",
     // subtitle = "Scan your receipts and extract information automatically",
-    captureButtonText = "Scanner",
-    processButtonText = "Process Receipt",
-    retakeButtonText = "Retake Photo",
+    // captureButtonText = "Scanner",
+    // processButtonText = "Process Receipt",
+    // retakeButtonText = "Retake Photo",
     // scanAnotherButtonText = "Scan Another Receipt",
-    startScanButtonText = "Scanner"
+    // startScanButtonText = "Scanner"
 }: any) => {
     // const [isProcessing, setIsProcessing] = useState(false);
+    const { t } = useTranslation();
     const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
     const [showCamera, setShowCamera] = useState(false);
     const [capturedImage, setCapturedImage] = useState<any>(null);
@@ -292,7 +294,7 @@ const ReceiptScanner = ({
             <div className=" -300 flex flex-col flex-grow ">
                 {showTitle && (
                     <div className="text-center mb-8">
-                        <h1 className="text-xl font-bold text-gray-50 mb-2">{title}</h1>
+                        <h1 className="text-xl font-bold text-gray-50 mb-2">{t('scan_reciept.title')}</h1>
                         {/* <p className="text-gray-600">{subtitle}</p> */}
                     </div>
                 )}
@@ -323,11 +325,11 @@ const ReceiptScanner = ({
                                 className="bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-medium flex items-center space-x-2 mx-auto transition-colors"
                             >
                                 <Camera size={20} />
-                                <span>{startScanButtonText}</span>
+                                <span>{t('scan_reciept.scan_btn')}</span>
                             </button>
                             {permissionStatus === 'denied' && (
                                 <p className="text-red-600 text-sm mt-2">
-                                    Camera access is required. Please enable it in your browser settings.
+                                    {t('scan_reciept.required_camera_access_msg')}
                                 </p>
                             )}
                         </div>
@@ -431,7 +433,7 @@ const ReceiptScanner = ({
                                     : 'bg-blue-950  text-white'
                                     }`}                            >
                                 <Camera size={20} />
-                                <span>{captureButtonText}</span>
+                                <span>{t('scan_reciept.capture_img_text')}</span>
                             </button>
                         </div>
                     </div>
@@ -441,7 +443,7 @@ const ReceiptScanner = ({
                 {capturedImage && (
                     <div className="bg-white rounded-lg shadow-lg p-6">
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-xl font-semibold">Review Your Photo</h2>
+                            <h2 className="text-xl font-semibold">{t('scan_reciept.capture_img_preview_title')}</h2>
                             <button
                                 onClick={resetScanner}
                                 className="text-gray-500 hover:text-gray-700 p-2"
@@ -471,7 +473,7 @@ const ReceiptScanner = ({
                                     disabled={isProcessing}
                                     className="bg-gray-500 hover:bg-gray-600 text-center disabled:bg-gray-400 text-white px-6 py-3 rounded-lg font-medium transition-colors"
                                 >
-                                    {retakeButtonText}
+                                    {t('scan_reciept.retake_btn_text')}
                                 </button>
                                 <button
                                     onClick={() => {
@@ -484,12 +486,12 @@ const ReceiptScanner = ({
                                     {isProcessing ? (
                                         <>
                                             <Loader2 className="animate-spin" size={20} />
-                                            <span>Processing...</span>
+                                            <span>{t('scan_reciept.process_btn_text')}</span>
                                         </>
                                     ) : (
                                         <>
                                             <Upload size={20} />
-                                            <span>{processButtonText}</span>
+                                            <span>{t('scan_reciept.submit_btn_text')}</span>
                                         </>
                                     )}
                                 </button>

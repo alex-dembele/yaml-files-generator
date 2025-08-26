@@ -1,8 +1,10 @@
 import { BackArrow, BackgroundContainer, ContinueButton, ProgressLine, StepCompletedCard, StepCompleteIndicator } from "@/modules/shared/components";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 
 const TombolaCompletePage = () => {
+    const { t } = useTranslation();
     const { salespointUUID } = useParams();
     const navigate = useNavigate();
 
@@ -35,7 +37,7 @@ const TombolaCompletePage = () => {
                 {/* Continue button */}
                 <div className="flex-grow flex flex-col justify-center  items-center ">
                     <ContinueButton
-                        text="Retour à l’acceuil"
+                        text={t('tombola_completed.back_to_home_btn')}
                         onContinue={handleContinue}
                     />
 

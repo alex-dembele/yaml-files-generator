@@ -2,11 +2,13 @@ import { IPlayerUpdateInfosRequest } from "@/modules/players/api";
 import { usePlayerUpdateInfos } from "@/modules/players/hooks";
 import { BackArrow, BackgroundContainer, ContinueButton, InputCard, ProgressLine, StepIndicator } from "@/modules/shared/components";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { MoonLoader } from "react-spinners";
 
 
 const UpdateInfoPage = () => {
+    const { t } = useTranslation();
     const { salespointUUID, identityUUID } = useParams();
     const updateInfosMutation = usePlayerUpdateInfos();
     const navigate = useNavigate();
@@ -62,8 +64,8 @@ const UpdateInfoPage = () => {
                     <>
                         <InputCard
                             key={"update-info-name"}
-                            label="Quel est votre nom ?"
-                            placeholder="Entrer votre nom"
+                            label={t('update_info.input_card.username.label')}
+                            placeholder={t('update_info.input_card.username.placeholder')}
                             value={username}
                             onChange={handleUsernameChange}
                         />
@@ -82,8 +84,8 @@ const UpdateInfoPage = () => {
                     <>
                         <InputCard
                             key={"update-info-address"}
-                            label="Quel est votre adresse ?"
-                            placeholder="Entrer votre adresse"
+                            label={t('update_info.input_card.address.label')}
+                            placeholder={t('update_info.input_card.address.placeholder')}
                             value={address}
                             onChange={handleAddressChange}
                         />

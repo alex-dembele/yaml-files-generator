@@ -4,8 +4,10 @@ import sloganSectionLogo from '@/assets/images/slogon-section.png';
 import { useNavigate, useParams } from "react-router-dom";
 import { useSalespointVerifyIdentity } from "@/modules/salespoints/hooks";
 import { MoonLoader } from "react-spinners";
+import { useTranslation } from "react-i18next";
 
 const CheckSalespointPage = () => {
+    const { t } = useTranslation();
     const { salespointUUID } = useParams();
     const { data, isLoading } = useSalespointVerifyIdentity(salespointUUID);
 
@@ -33,11 +35,11 @@ const CheckSalespointPage = () => {
                         <img src={sloganSectionLogo} className=" w-5/6" />
                     </div>
                     <div >
-                        <p className="text-xl font-semibold text-white" >Participez à notre <span className="bg-blue-700 p-1">grande tombola</span> anniversaire et tentez de repartir avec des <span className="bg-blue-700 p-1">cadeaux de folie !</span> </p>
+                        <p className="text-xl font-semibold text-white" >{t('check_salespoint.slogan_p1')} <span className="bg-blue-700 p-1">{t('check_salespoint.slogan_p2')}</span> {t('check_salespoint.slogan_p3')}<span className="bg-blue-700 p-1">{t('check_salespoint.slogan_p4')}</span> </p>
                     </div>
                     <div className="mt-3 w-full">
                         <ContinueButton
-                            text="Jouer maintenant"
+                            text={t('check_salespoint.play_now')}
                             onContinue={handleContinue}
                             disabled={false}
                         />
@@ -56,7 +58,7 @@ const CheckSalespointPage = () => {
                     <img src={sloganSectionLogo} className=" w-5/6" />
                 </div>
                 <div >
-                    <p className="text-xl font-semibold text-white" >Désolé, la tombola n'est pas disponible dans ce point de vente.</p>
+                    <p className="text-xl font-semibold text-white" >{t('check_salespoint.not_available')}</p>
                 </div>
             </div>
         </BackgroundContainer>
