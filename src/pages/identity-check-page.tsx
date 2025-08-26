@@ -11,8 +11,8 @@ const IdentityCheckPage = () => {
 
     const checkPlayerIdentityMutation = useCheckPlayerIdentity();
 
-    const [currentStep, setCurrentStep] = useState(1);
-    const [progress, setProgress] = useState(25);
+    const [currentStep,] = useState(1);
+    const [progress,] = useState(25);
     const [inputValue, setInputValue] = useState("");
 
     const handleBack = () => {
