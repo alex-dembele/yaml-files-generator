@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ChevronLeft, ShoppingCart } from 'lucide-react';
 import carrefourPrimaryBg from '@/assets/images/carrefour-main-bg.png';
-
+import confettiImg from "@/assets/images/confettis.png";
 
 // 1. Background Container with Color Overlay
 export const BackgroundContainer = ({
@@ -45,6 +45,35 @@ export const StepIndicator = ({ currentStep, totalSteps }) => {
         </div>
     );
 };
+
+export const StepCompleteIndicator = () => {
+    return (
+        <div className="bg-red-500 text-white px-2 py-1 rounded-lg text-sm font-medium shadow-md">
+            Terminé !
+        </div>
+    );
+};
+
+export const StepCompletedCard = () => {
+    return (
+        <div className="bg-white rounded-2xl  shadow-lg px-8 py-3   text-center">
+            <h2 className="text-lg font-semibold text-blue-800 mb-4 text-center">
+                Félicitations !
+            </h2>
+            <div>
+                <img
+                    src={confettiImg}
+                    alt="Success"
+                    className="w-72 mx-auto mb-4" />
+            </div>
+            <div>
+                <h4 className='text-gray-600'>
+                    Votre participation a bien été enregistrée
+                </h4>
+            </div>
+        </div>
+    );
+}
 
 // 4. Progress Line with Truck Component
 export const ProgressLine = ({

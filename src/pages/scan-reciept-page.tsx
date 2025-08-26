@@ -2,7 +2,6 @@ import { BackArrow, BackgroundContainer, ContinueButton, InputCard, ProgressLine
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useCheckPlayerIdentity } from '@/modules/players/hooks'
-import { MoonLoader } from "react-spinners";
 import { IPlayerCheckIdentityRequest } from "@/modules/players/api";
 import ReceiptScanner from "@/modules/shared/RecieptScanner";
 

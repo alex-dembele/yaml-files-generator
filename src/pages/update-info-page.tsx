@@ -7,28 +7,33 @@ const UpdateInfoPage = () => {
     const { salespointUUID } = useParams();
     const navigate = useNavigate();
 
-    const [currentStep, setCurrentStep] = useState(1);
-    const [progress, setProgress] = useState(25);
-    const [inputValue, setInputValue] = useState("");
+    const [currentStep, setCurrentStep] = useState(2);
+    const [progress, setProgress] = useState(50);
+    const [username, setUsername] = useState("");
+    const [address, setAddress] = useState("");
 
     const handleBack = () => {
         navigate(`/${salespointUUID}`);
     };
 
     const handleContinue = () => {
-        if (inputValue !== "653618276") {
-            setCurrentStep(2);
-            setProgress(progress + 25);
-            navigate(`/${salespointUUID}/identity-check/cc030673-5d9a-11f0-8012-0acc3673109d/update-info`);
-        } else {
-            setCurrentStep(4);
-            setProgress(100);
-            navigate(`/${salespointUUID}/identity-check/cc030673-5d9a-11f0-8012-0acc3673109d/scan-receipt `);
+        if (currentStep === 2) {
+            setCurrentStep(3);
+            setProgress(75);
+        } else if (currentStep === 3) {
+            console.log("Username: ", username);
+            console.log("Address: ", address);
+            // Final step, navigate to scan receipt page
+            navigate(`/${salespointUUID}/identity-check/:identityUUID/scan-receipt`);
         }
     };
 
-    const handleInputChange = (value) => {
-        setInputValue(value);
+    const handleUsernameChange = (value: string) => {
+        setUsername(value);
+    };
+
+    const handleAddressChange = (value: string) => {
+        setAddress(value);
     };
 
     return (
@@ -43,21 +48,46 @@ const UpdateInfoPage = () => {
                 {/* Progress line with truck */}
                 <ProgressLine progress={progress} />
 
-                {/* Input card */}
-                <InputCard
-                    label="Quel est votre numéro de téléphone ?"
-                    placeholder="Entrer votre numéro"
-                    value={inputValue}
-                    onChange={handleInputChange}
-                />
+                {currentStep === 2 && (
+                    <>
+                        <InputCard
+                            key={"update-info-name"}
+                            label="Quel est votre nom ?"
+                            placeholder="Entrer votre nom"
+                            value={username}
+                            onChange={handleUsernameChange}
+                        />
 
-                {/* Continue button */}
-                <div className="flex-grow flex flex-col justify-center  items-center ">
-                    <ContinueButton
-                        onContinue={handleContinue}
-                        disabled={!inputValue.trim()}
-                    />
-                </div>
+                        <div className="flex-grow flex flex-col justify-center  items-center ">
+                            <ContinueButton
+                                onContinue={handleContinue}
+                                disabled={!username.trim()}
+                            />
+
+                        </div>
+                    </>
+                )}
+
+                {currentStep === 3 && (
+                    <>
+                        <InputCard
+                            key={"update-info-address"}
+                            label="Quel est votre adresse ?"
+                            placeholder="Entrer votre adresse"
+                            value={address}
+                            onChange={handleAddressChange}
+                        />
+                        <div className="flex-grow flex flex-col justify-center  items-center ">
+                            <ContinueButton
+                                onContinue={handleContinue}
+                                disabled={!address.trim()}
+                            />
+
+                        </div>
+                    </>
+                )}
+
+
             </div>
         </BackgroundContainer>
     );

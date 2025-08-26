@@ -418,14 +418,28 @@ const ReceiptScanner = ({
                                 className="max-w-full max-h-96 mx-auto rounded-lg shadow-md mb-4"
                             />
 
-                            <div className="flex justify-center space-x-4">
+                            <div className="flex justify-center  flex-col gap-y-2">
+                                <button
+                                    onClick={() => {
+                                        console.log('Retake photo clicked');
+                                        if (capturedImage?.url) {
+                                            URL.revokeObjectURL(capturedImage.url);
+                                        }
+                                        setCapturedImage(null);
+                                        requestCameraAccess();
+                                    }}
+                                    disabled={isProcessing}
+                                    className="bg-gray-500 hover:bg-gray-600 text-center disabled:bg-gray-400 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                                >
+                                    {retakeButtonText}
+                                </button>
                                 <button
                                     onClick={() => {
                                         console.log('Process receipt button clicked');
                                         processImage(capturedImage.blob);
                                     }}
                                     disabled={isProcessing}
-                                    className="bg-green-500 hover:bg-green-600 disabled:bg-green-400 text-white px-6 py-3 rounded-lg font-medium flex items-center space-x-2 transition-colors"
+                                    className="bg-green-500 hover:bg-green-600 disabled:bg-green-400 text-white px-6 py-3 rounded-lg font-medium flex items-center justify-center space-x-2 transition-colors"
                                 >
                                     {isProcessing ? (
                                         <>
@@ -440,25 +454,12 @@ const ReceiptScanner = ({
                                     )}
                                 </button>
 
-                                <button
-                                    onClick={() => {
-                                        console.log('Retake photo clicked');
-                                        if (capturedImage?.url) {
-                                            URL.revokeObjectURL(capturedImage.url);
-                                        }
-                                        setCapturedImage(null);
-                                        requestCameraAccess();
-                                    }}
-                                    disabled={isProcessing}
-                                    className="bg-gray-500 hover:bg-gray-600 disabled:bg-gray-400 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-                                >
-                                    {retakeButtonText}
-                                </button>
+
                             </div>
                         </div>
 
                         {/* Success message and scan another button */}
-                        {!isProcessing && (
+                        {/* {!isProcessing && (
                             <div className="mt-6 text-center">
                                 <button
                                     onClick={resetScanner}
@@ -467,7 +468,7 @@ const ReceiptScanner = ({
                                     {scanAnotherButtonText}
                                 </button>
                             </div>
-                        )}
+                        )} */}
                     </div>
                 )}
 

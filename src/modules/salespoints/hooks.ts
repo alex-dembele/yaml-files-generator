@@ -16,7 +16,7 @@ export const useSalespointVerifyIdentity = (uuid?: string) => {
         queryKey: ['salespoint-verify-identity', uuid],
         queryFn: async () => {
             const res_data = await SalesPointsApi.verifyIdentity(uuid);
-            return res_data?.data;
+            return res_data;
         },
         enabled: !!uuid // Only run if uuid is provided
     });

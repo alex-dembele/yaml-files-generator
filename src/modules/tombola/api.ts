@@ -1,98 +1,78 @@
-import { API_CONFIG, apiClient } from "@/api";
+import { API_CONFIG, apiClient, ReadResponse } from "@/api";
 
-
-const modelName = "clients";
 const api_urls = {
-    getMany: () => API_CONFIG.buildUrl(`/${modelName}`),
-    getOne: (id: number) => API_CONFIG.buildUrl(`/${modelName}/${id}`),
-    create: () => API_CONFIG.buildUrl(`/${modelName}`),
-    update: (id: number) => API_CONFIG.buildUrl(`/${modelName}/${id}`),
-    deleteOne: (id: number) => API_CONFIG.buildUrl(`/${modelName}/${id}`),
-    deleteMany: () => API_CONFIG.buildUrl(`/${modelName}`),
-    getByFilterDaterange: () => API_CONFIG.buildUrl(`/${modelName}`),
-    getTotalClients: () => API_CONFIG.buildUrl(`/total-client`),
-    getTotalRecommendations: () => API_CONFIG.buildUrl(`/total-person`)
+    get_scan_receipt_url: () => API_CONFIG.buildUrl(`/tombola/scan-receipt`),
 
 
 };
+// ====================================================
 
-const ClientApi = {
-    async getMany(
-        { paginate = true, params = { page: 1, limit: 10 }, queryParams = {} }: any
-    ): Promise<{ total: number, data: IClient[] }> {
-        const res = await apiClient({
-            endpoint: api_urls.getMany(),
-            params: paginate ? {
-                page: params.page,
-                perPage: params.limit,
-                fromDate: queryParams.dFrom,
-                toDate: queryParams.dTo
-            } : {
-                paginate: 0
-            }
-        });
-        const transformedResponseData = res.data.data.map((row, index) => this.transform(row, index)) || [];
-
-        const total = paginate ? res.data.paginate.total : transformedResponseData.length;
-
-        return {
-            total: total,
-            data: transformedResponseData
-        }
-    },
-
-    transform(row: any, index: number): Partial<IClient> {
-        const formatedAccountStatement: Partial<IClient> = {
-            no: index + 1,
-            id: row?.id,
-            name: row?.name,
-            IDClient: row?.IDClient,
-            date: row.created_at,
-            telephone: row?.phone_number,
-            persons: row?.persons.map((person: any) => {
-                const recommmendPerson: IRecommendedPerson = {
-                    id: person?.id,
-                    name: `${person?.first_name} ${person.last_name}`,
-                    telephone: person?.phone_number
-                }
-                return recommmendPerson
-            }),
-        };
-        return formatedAccountStatement
-    },
-    getOne: async (id: number) => {
-        const res = await apiClient({ endpoint: api_urls.getOne(id) });
-        return res.data;
-    },
-    create: async (payLoad: any) => {
-        const res = await apiClient({ endpoint: api_urls.create(), method: 'POST', body: payLoad })
-        return res.data;
-    },
-    update: async (payLoad: any) => {
-        const res = await apiClient({ endpoint: api_urls.update(payLoad.id), method: "PUT", body: payLoad })
-        return res.data;
-    },
-    deleteOne: async (id: number) => {
-        const res = await apiClient({ endpoint: api_urls.deleteOne(id), method: "DELETE" })
-        return res.data;
-    },
-    deleteMany: async (ids: number[]) => {
-        const res = await apiClient({ endpoint: api_urls.deleteMany(), method: "POST", body: { "ids": ids } })
-        return res.data;
-    },
-    getByFilterDaterange: async (payLoad: { fromDate: any, toDate: any }) => {
-        const res = await apiClient({ endpoint: api_urls.getByFilterDaterange(), params: { paginate: 0, fromDate: payLoad.fromDate, toDate: payLoad.toDate } })
-        return res.data;
-    },
-    getTotalClients: async () => {
-        const res = await apiClient({ endpoint: api_urls.getTotalClients() })
-        return res.data;
-    },
-    getTotalRecommendations: async () => {
-        const res = await apiClient({ endpoint: api_urls.getTotalRecommendations() })
-        return res.data;
-    }
-
+export type ITombolaScanReceiptRequestDto = {
+    image_blob: Blob;
+}
+export type ITombolaScanReceiptRequest = {
+    imageBlob: Blob;
+}
+export type ITombolaScanReceiptResponseDto = {
+    is_okay: boolean;
 }
 
-export default ClientApi;
+export type ITombolaScanReceiptResponse = {
+    isOkay: boolean;
+}
+
+// ====================================================
+
+
+const TombolaApi = {
+    scanReceipt: async (payload: ITombolaScanReceiptRequest): Promise<ITombolaScanReceiptResponse> => {
+        // if (env.APP_USE_MOCK_API) {
+        //     await new Promise((resolve) => setTimeout(resolve, 200));
+        //     let res;
+        //     if (payload.phone_number === "653618276") {
+        //         res = await Promise.resolve({
+        //             data: { status: "OK", data: { id: 1, is_new_user: false, uuid: "c030673-5d9a-11f0-8012-0acc3673109d", phone_number: "653618276", username: "Duclair Deugoue", quartier: "Douala Cameroon" }, message: "Player data exist " }
+        //         })
+        //     } else {
+        //         res = await Promise.resolve({ data: { status: "OK", data: { is_new_user: true, uuid: "030673-5d9a-11f0-8012-0acc36731094", phone_number: payload.phone_number, quartier: '' }, message: "Player data was created" } })
+        //     }
+
+        //     const res_body = res.data as ReadResponse<IPlayerCheckIdentityResponseDto>;
+        //     if (res_body.data) {
+        //         const res_data: IPlayerCheckIdentityResponse = {
+        //             id: res_body.data.id,
+        //             is_new_user: res_body.data.is_new_user ?? false,
+        //             uuid: res_body.data.uuid ?? '',
+        //             username: res_body.data.username ?? '',
+        //             phone_number: res_body.data?.phone_number ?? '',
+        //             quartier: res_body.data.quartier,
+        //             created_at: res_body.data.created_at,
+        //             updated_at: res_body.data.created_at
+        //         }
+        //         return res_data;
+        //     }
+        //     throw new Error("Somthing when wrong: ");
+
+        // }
+        try {
+            const formData = new FormData();
+            formData.append('receipt', payload.imageBlob);
+
+            const res = await apiClient({
+                method: 'POST',
+                headers: { 'Content-Type': 'multipart/form-data' },
+                endpoint: api_urls.get_scan_receipt_url(),
+                body: formData
+            });
+            const res_body = res.data as ReadResponse<ITombolaScanReceiptResponseDto>
+            const res_data: ITombolaScanReceiptResponse = {
+                isOkay: res_body.data.is_okay,
+            }
+            return res_data;
+        } catch (error) {
+            throw new Error(`Something went wrong:  ${error}`);
+        }
+    },
+}
+
+export default TombolaApi;

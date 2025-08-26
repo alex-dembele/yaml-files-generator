@@ -26,7 +26,7 @@ const CheckSalespointPage = () => {
                 overlayColor="rgba(255, 255, 255, 0.0)"
             >
                 <div className=" flex flex-col flex-grow px-8 py-6 gap-y-7 items-center  text-center pt-24">
-                    <div bg-white className=" w-full flex justify-center">
+                    <div className=" w-full flex justify-center">
                         <img src={sloganSectionLogo} className=" w-5/6" />
                     </div>
                     <div >
@@ -49,7 +49,7 @@ const CheckSalespointPage = () => {
             overlayColor="rgba(255, 255, 255, 0.0)"
         >
             <div className=" flex flex-col flex-grow px-8 py-6 gap-y-7 items-center  text-center pt-24">
-                <div bg-white className=" w-full flex justify-center">
+                <div className=" w-full flex justify-center">
                     <img src={sloganSectionLogo} className=" w-5/6" />
                 </div>
                 <div >
