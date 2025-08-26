@@ -50,7 +50,7 @@ const ReceiptScanner = ({
 
         if (navigator.permissions && navigator.permissions.query) {
             try {
-                const perm = await navigator.permissions.query({ name: 'camera' });
+                const perm = await navigator.permissions.query({ name: "camera" as PermissionName });
                 setPermissionStatus(perm.state);
                 perm.onchange = () => setPermissionStatus(perm.state);
                 return perm.state;

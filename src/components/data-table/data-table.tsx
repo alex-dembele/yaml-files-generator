@@ -113,7 +113,8 @@ export function DataTable<T extends RowData>({
         {
             id: 'expander',
             header: '',
-            cell: ({ row }) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            cell: ({ row }: any) => {
                 const canExpandRow = canExpand(row.original);
                 const isExpanded = expandedRows.has(row.id);
 

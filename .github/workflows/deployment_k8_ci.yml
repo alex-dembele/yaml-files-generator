@@ -1,15 +1,15 @@
-name: stagging-k8-ci
+name: deployment-k8-ci
 
 on:
   push:
     branches:
-      - "stagging-k8"
+      - "deployment-k8"
   workflow_dispatch:
     inputs:
       version_type:
         description: "Version type to increment (major, minor, patch)"
         required: true
-        default: "minor"
+        default: "patch"
 
 jobs:
   build:
@@ -47,12 +47,12 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64/v8
           tags: |
-            nexah/onboarding-web-admin:${{ env.next_version }}
-            nexah/onboarding-web-admin:latest
+            nexah/tombola-carrefour-web:${{ env.next_version }}
+            nexah/tombola-carrefour-web:latest
           push: true
 
       - name: Create Git Tag
-        if: github.ref == 'refs/heads/stagging-k8'
+        if: github.ref == 'refs/heads/deployment-k8'
         run: |
           git tag ${{ env.next_version }}
           git push origin ${{ env.next_version }}
