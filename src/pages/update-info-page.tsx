@@ -1,10 +1,14 @@
+import { IPlayerUpdateInfosRequest } from "@/modules/players/api";
+import { usePlayerUpdateInfos } from "@/modules/players/hooks";
 import { BackArrow, BackgroundContainer, ContinueButton, InputCard, ProgressLine, StepIndicator } from "@/modules/shared/components";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { MoonLoader } from "react-spinners";
 
 
 const UpdateInfoPage = () => {
-    const { salespointUUID } = useParams();
+    const { salespointUUID, identityUUID } = useParams();
+    const updateInfosMutation = usePlayerUpdateInfos();
     const navigate = useNavigate();
 
     const [currentStep, setCurrentStep] = useState(2);
@@ -21,10 +25,16 @@ const UpdateInfoPage = () => {
             setCurrentStep(3);
             setProgress(75);
         } else if (currentStep === 3) {
-            console.log("Username: ", username);
-            console.log("Address: ", address);
-            // Final step, navigate to scan receipt page
-            navigate(`/${salespointUUID}/identity-check/:identityUUID/scan-receipt`);
+            if (salespointUUID && identityUUID) {
+                const payload: IPlayerUpdateInfosRequest = {
+                    name: username,
+                    address: address,
+                    salesPointId: salespointUUID,
+                    clientId: identityUUID
+                }
+                updateInfosMutation.mutate(payload);
+            }
+
         }
     };
 
@@ -78,10 +88,15 @@ const UpdateInfoPage = () => {
                             onChange={handleAddressChange}
                         />
                         <div className="flex-grow flex flex-col justify-center  items-center ">
-                            <ContinueButton
-                                onContinue={handleContinue}
-                                disabled={!address.trim()}
-                            />
+                            {updateInfosMutation.isPending ? (
+                                <MoonLoader size={16} />
+                            ) : (
+                                <ContinueButton
+                                    onContinue={handleContinue}
+                                    disabled={!address.trim()}
+                                />
+                            )}
+
 
                         </div>
                     </>

@@ -25,7 +25,8 @@ const SalesPointsApi = {
             return {
                 status: res_body.data ? 200 : 400
             };
-        } catch (error) {
+        } catch (e) {
+            console.log("Fail to check salespoint: ", e);
             throw new Error("Something went wrong!");
         }
 

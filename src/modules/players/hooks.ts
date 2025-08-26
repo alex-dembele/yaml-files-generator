@@ -37,12 +37,19 @@ const useCheckPlayerIdentity = (
 };
 
 const usePlayerUpdateInfos = (
-    options: MutationOptions<IPlayerUpdateInfosResponse, Error, IPlayerUpdateInfosRequest>
+    options?: MutationOptions<IPlayerUpdateInfosResponse, Error, IPlayerUpdateInfosRequest>
 ) => {
-    const { onSuccess: customOnSuccess, ...restOptions } = options;
+    const navigate = useNavigate();
+    const { salespointUUID } = useParams();
+
+    const { onSuccess: customOnSuccess, ...restOptions } = options || {};
     return useMutation<IPlayerUpdateInfosResponse, Error, IPlayerUpdateInfosRequest>({
         mutationFn: (payload) => PlayersApi.updateInfos(payload),
         onSuccess: (data, variables, context) => {
+            const { is_created } = data;
+            if (is_created) {
+                navigate(`/${salespointUUID}/identity-check/${variables.clientId}/scan-receipt `);
+            }
             // Then call taxe-provided onSuccess if available
             if (customOnSuccess) {
                 customOnSuccess(data, variables, context);
