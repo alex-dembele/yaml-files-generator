@@ -1,50 +1,32 @@
-import { BackArrow, BackgroundContainer, ContinueButton, InputCard, ProgressLine, StepIndicator } from "@/modules/shared/components";
+import { BackArrow, BackgroundContainer, ProgressLine, StepIndicator } from "@/modules/shared/components";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useCheckPlayerIdentity } from '@/modules/players/hooks'
-import { IPlayerCheckIdentityRequest } from "@/modules/players/api";
 import ReceiptScanner from "@/modules/shared/RecieptScanner";
 
 const ScanRecieptPage = () => {
-    const { salespointUUID } = useParams();
     const navigate = useNavigate();
+    const { salespointUUID } = useParams();
+    // const scanReceiptMutation = useTombolaScanReceipt();
 
-    const checkPlayerIdentityMutation = useCheckPlayerIdentity();
-
-    const [currentStep, setCurrentStep] = useState(4);
-    const [progress, setProgress] = useState(80);
-    const [inputValue, setInputValue] = useState("");
+    const [currentStep,] = useState(4);
+    const [progress,] = useState(88);
 
     const handleBack = () => {
         navigate(`/${salespointUUID}`);
     };
 
-    const handleContinue = () => {
-        const payload: IPlayerCheckIdentityRequest = {
-            phone_number: inputValue
-        }
-        console.log("Payload: ", payload);
-        checkPlayerIdentityMutation.mutate(payload)
-    };
 
-    const handleReceiptProcess = async (imageBlob) => {
-        // Your actual API call here
-        const formData = new FormData();
-        formData.append('receipt', imageBlob);
+    // const handleReceiptProcess = async (imageBlob: Blob) => {
+    //     if (salespointUUID && identityUUID) {
+    //         const payload: ITombolaScanReceiptRequest = {
+    //             image: imageBlob,
+    //             salesPointId: salespointUUID,
+    //             clientId: identityUUID
+    //         }
+    //         scanReceiptMutation.mutate(payload)
+    //     }
 
-        const response = await fetch('/api/process-receipt', {
-            method: 'POST',
-            body: formData
-        });
-
-        const data = await response.json();
-        // Handle the processed data however you want
-    };
-
-
-    const handleInputChange = (value: string) => {
-        setInputValue(value);
-    };
+    // };
 
     return (
         <BackgroundContainer>
@@ -60,8 +42,9 @@ const ScanRecieptPage = () => {
 
                 {/* Input card */}
                 <ReceiptScanner
-                    onError={() => console.log("Something went wrong")}
-                    onReceiptImageProcess={handleReceiptProcess}
+                // isProcessing={scanReceiptMutation.isPending}
+                // onError={scanReceiptMutation.isError}
+                // onReceiptImageProcess={handleReceiptProcess}
                 />
 
                 {/* Continue button */}

@@ -3,6 +3,7 @@ import carrefourPrimaryBg from '@/assets/images/carrefour-main-bg.png';
 import sloganSectionLogo from '@/assets/images/slogon-section.png';
 import { useNavigate, useParams } from "react-router-dom";
 import { useSalespointVerifyIdentity } from "@/modules/salespoints/hooks";
+import { MoonLoader } from "react-spinners";
 
 const CheckSalespointPage = () => {
     const { salespointUUID } = useParams();
@@ -16,9 +17,11 @@ const CheckSalespointPage = () => {
     }
 
     if (isLoading) {
-        return <div className="flex items-center justify-center flex-grow">Loading...</div>
+        return <div className="flex items-center justify-center flex-grow">
+            <MoonLoader size={20} />
+        </div>
     }
-    console.log("data from useSalespointVerifyIdentity:", data);
+    // console.log("data from useSalespointVerifyIdentity:", data);
     if (data && data?.status === 200) {
         return (
             <BackgroundContainer

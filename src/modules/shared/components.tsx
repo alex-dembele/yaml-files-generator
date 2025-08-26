@@ -1,4 +1,4 @@
-import { useState } from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ChevronLeft, ShoppingCart } from 'lucide-react';
 import carrefourPrimaryBg from '@/assets/images/carrefour-main-bg.png';
 import confettiImg from "@/assets/images/confettis.png";
@@ -8,7 +8,7 @@ export const BackgroundContainer = ({
     backgroundImage = carrefourPrimaryBg,
     overlayColor = "rgba(0, 174, 239, 0.7)",
     children
-}) => {
+}: any) => {
     return (
         <div
             className=" flex flex-col flex-grow relative bg-cover bg-center bg-no-repeat"
@@ -26,7 +26,7 @@ export const BackgroundContainer = ({
 };
 
 // 2. Back Arrow Component
-export const BackArrow = ({ onBack }) => {
+export const BackArrow = ({ onBack }: any) => {
     return (
         <button
             onClick={onBack}
@@ -38,7 +38,7 @@ export const BackArrow = ({ onBack }) => {
 };
 
 // 3. Step Indicator Component
-export const StepIndicator = ({ currentStep, totalSteps }) => {
+export const StepIndicator = ({ currentStep, totalSteps }: any) => {
     return (
         <div className="bg-red-500 text-white px-2 py-1 rounded-lg text-sm font-medium shadow-md">
             Étape {currentStep} sur {totalSteps}
@@ -78,7 +78,7 @@ export const StepCompletedCard = () => {
 // 4. Progress Line with Truck Component
 export const ProgressLine = ({
     progress = 0,
-    truckIcon = "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80"
+    // truckIcon = "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80"
 }) => {
     return (
         <div className="relative w-full max-w-md mx-auto my-6">
@@ -112,8 +112,8 @@ export const InputCard = ({
     onChange,
     type = "text",
     disabled = false
-}) => {
-    const handleInputChange = (e) => {
+}: any) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (onChange) {
             onChange(e.target.value);
         }
@@ -137,7 +137,7 @@ export const InputCard = ({
 };
 
 // 6. Continue Button Component
-export const ContinueButton = ({ onContinue, disabled = false, text = "Continuer" }) => {
+export const ContinueButton = ({ onContinue, disabled = false, text = "Continuer" }: any) => {
     return (
         <button
             onClick={onContinue}
@@ -153,66 +153,66 @@ export const ContinueButton = ({ onContinue, disabled = false, text = "Continuer
 };
 
 // Demo Component showing all components in action
-const CarrefourDemo = () => {
-    const [currentStep, setCurrentStep] = useState(1);
-    const [progress, setProgress] = useState(25);
-    const [inputValue, setInputValue] = useState("");
+// const CarrefourDemo = () => {
+//     const [currentStep, setCurrentStep] = useState(1);
+//     const [progress, setProgress] = useState(25);
+//     const [inputValue, setInputValue] = useState("");
 
-    const handleBack = () => {
-        if (currentStep > 1) {
-            setCurrentStep(currentStep - 1);
-            setProgress(progress - 25);
-        }
-    };
+//     const handleBack = () => {
+//         if (currentStep > 1) {
+//             setCurrentStep(currentStep - 1);
+//             setProgress(progress - 25);
+//         }
+//     };
 
-    const handleContinue = () => {
-        if (currentStep < 4) {
-            setCurrentStep(currentStep + 1);
-            setProgress(progress + 25);
-        }
-    };
+//     const handleContinue = () => {
+//         if (currentStep < 4) {
+//             setCurrentStep(currentStep + 1);
+//             setProgress(progress + 25);
+//         }
+//     };
 
-    const handleInputChange = (value) => {
-        setInputValue(value);
-    };
+//     const handleInputChange = (value:) => {
+//         setInputValue(value);
+//     };
 
-    return (
-        <BackgroundContainer>
-            <div className="p-4 space-y-6">
-                {/* Header with back arrow and step indicator */}
-                <div className="flex justify-between items-center">
-                    <BackArrow onBack={handleBack} />
-                    <StepIndicator currentStep={currentStep} totalSteps={4} />
-                </div>
+//     return (
+//         <BackgroundContainer>
+//             <div className="p-4 space-y-6">
+//                 {/* Header with back arrow and step indicator */}
+//                 <div className="flex justify-between items-center">
+//                     <BackArrow onBack={handleBack} />
+//                     <StepIndicator currentStep={currentStep} totalSteps={4} />
+//                 </div>
 
-                {/* Progress line with truck */}
-                <ProgressLine progress={progress} />
+//                 {/* Progress line with truck */}
+//                 <ProgressLine progress={progress} />
 
-                {/* Input card */}
-                <InputCard
-                    label="Quel est votre nom ?"
-                    placeholder="Entrer votre nom"
-                    value={inputValue}
-                    onChange={handleInputChange}
-                />
+//                 {/* Input card */}
+//                 <InputCard
+//                     label="Quel est votre nom ?"
+//                     placeholder="Entrer votre nom"
+//                     value={inputValue}
+//                     onChange={handleInputChange}
+//                 />
 
-                {/* Continue button */}
-                <div className="px-4">
-                    <ContinueButton
-                        onContinue={handleContinue}
-                        disabled={!inputValue.trim()}
-                    />
-                </div>
+//                 {/* Continue button */}
+//                 <div className="px-4">
+//                     <ContinueButton
+//                         onContinue={handleContinue}
+//                         disabled={!inputValue.trim()}
+//                     />
+//                 </div>
 
-                {/* Demo info */}
-                <div className="text-center text-white text-sm opacity-75 mt-8">
-                    <p>Current step: {currentStep}/4</p>
-                    <p>Progress: {progress}%</p>
-                    <p>Input value: "{inputValue}"</p>
-                </div>
-            </div>
-        </BackgroundContainer>
-    );
-};
+//                 {/* Demo info */}
+//                 <div className="text-center text-white text-sm opacity-75 mt-8">
+//                     <p>Current step: {currentStep}/4</p>
+//                     <p>Progress: {progress}%</p>
+//                     <p>Input value: "{inputValue}"</p>
+//                 </div>
+//             </div>
+//         </BackgroundContainer>
+//     );
+// };
 
-export default CarrefourDemo;
+// export default CarrefourDemo;

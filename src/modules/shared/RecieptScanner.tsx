@@ -1,37 +1,39 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useRef, useCallback } from 'react';
-import { Camera, X, CheckCircle, AlertCircle, Upload, Loader2 } from 'lucide-react';
+import { Camera, X, AlertCircle, Upload, Loader2 } from 'lucide-react';
+import { useParams } from 'react-router-dom';
+import { useTombolaScanReceipt } from '../tombola/hooks';
+import { ITombolaScanReceiptRequest } from '../tombola/api';
 
 const ReceiptScanner = ({
-    onReceiptImageProcess,
-    onError,
+    // onReceiptImageProcess,
+    // isProcessing = false,
+    // onError,
     className = "",
     showTitle = true,
     title = "Scannez votre facture",
-    subtitle = "Scan your receipts and extract information automatically",
-    captureButtonText = "Capture Photo",
+    // subtitle = "Scan your receipts and extract information automatically",
+    captureButtonText = "Scanner",
     processButtonText = "Process Receipt",
     retakeButtonText = "Retake Photo",
-    scanAnotherButtonText = "Scan Another Receipt",
-    startScanButtonText = "Start Scanning"
-}) => {
-    const [isProcessing, setIsProcessing] = useState(false);
-    const [cameraStream, setCameraStream] = useState(null);
+    // scanAnotherButtonText = "Scan Another Receipt",
+    startScanButtonText = "Scanner"
+}: any) => {
+    // const [isProcessing, setIsProcessing] = useState(false);
+    const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
     const [showCamera, setShowCamera] = useState(false);
-    const [capturedImage, setCapturedImage] = useState(null);
+    const [capturedImage, setCapturedImage] = useState<any>(null);
     const [error, setError] = useState('');
     const [permissionStatus, setPermissionStatus] = useState('prompt');
     const [isVideoReady, setIsVideoReady] = useState(false);
 
-    const videoRef = useRef(null);
-    const canvasRef = useRef(null);
+    const videoRef = useRef<HTMLVideoElement | null>(null);
+    const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
     // Handle errors internally and also notify parent if callback provided
-    const handleError = useCallback((errorMessage) => {
+    const handleError = useCallback((errorMessage: string) => {
         setError(errorMessage);
-        if (onError) {
-            onError(errorMessage);
-        }
-    }, [onError]);
+    }, [setError]);
 
     const checkCameraPermission = useCallback(async () => {
         if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
@@ -113,14 +115,36 @@ const ReceiptScanner = ({
             const setupVideo = () => {
                 if (!videoRef.current) return;
 
-                try { videoRef.current.setAttribute('playsinline', ''); } catch (e) { }
-                try { videoRef.current.setAttribute('webkit-playsinline', ''); } catch (e) { }
-                try { videoRef.current.muted = true; } catch (e) { }
-
-                videoRef.current.srcObject = stream;
                 try {
-                    videoRef.current.load();
-                } catch (e) { }
+                    videoRef.current?.setAttribute('playsinline', '');
+                    console.log('Set playsinline attribute');
+                } catch (e) {
+                    console.warn('Failed to set playsinline attribute', e);
+                }
+                try {
+                    videoRef.current?.setAttribute('webkit-playsinline', '');
+                    console.log('Set webkit-playsinline attribute');
+                } catch (e) {
+                    console.warn('Failed to set webkit-playsinline attribute', e);
+                }
+                try {
+                    if (videoRef.current) {
+                        videoRef.current.muted = true;
+                        console.log('Set video muted');
+                    }
+                } catch (e) {
+                    console.warn('Failed to set video muted', e);
+                }
+
+                if (videoRef.current) {
+                    videoRef.current.srcObject = stream;
+                    try {
+                        videoRef.current.load();
+                        console.log('Video loaded');
+                    } catch (e) {
+                        console.warn('Failed to load video', e);
+                    }
+                }
 
                 const playPromise = videoRef.current.play();
                 if (playPromise !== undefined) {
@@ -148,7 +172,7 @@ const ReceiptScanner = ({
             if (videoRef.current) setupVideo();
             else setTimeout(setupVideo, 200);
 
-        } catch (err) {
+        } catch (err: any) {
             console.error('Camera access error:', err);
             if (err.name === 'NotAllowedError' || err.name === 'SecurityError') {
                 setPermissionStatus('denied');
@@ -202,43 +226,57 @@ const ReceiptScanner = ({
             const ctx = canvas.getContext('2d');
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            if (ctx) {
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            canvas.toBlob((blob) => {
-                if (blob) {
-                    console.log('Image captured successfully, blob size:', blob.size);
-                    const imageUrl = URL.createObjectURL(blob);
-                    console.log('Image URL created:', imageUrl);
-                    setCapturedImage({ blob, url: imageUrl });
-                    stopCamera();
-                } else {
-                    console.error('Failed to create blob from canvas');
-                    handleError('Failed to capture image. Please try again.');
-                }
-            }, 'image/jpeg', 0.8);
-
+                canvas.toBlob((blob) => {
+                    if (blob) {
+                        console.log('Image captured successfully, blob size:', blob.size);
+                        const imageUrl = URL.createObjectURL(blob);
+                        console.log('Image URL created:', imageUrl);
+                        setCapturedImage({ blob, url: imageUrl });
+                        stopCamera();
+                    } else {
+                        console.error('Failed to create blob from canvas');
+                        handleError('Failed to capture image. Please try again.');
+                    }
+                }, 'image/jpeg', 0.8);
+            } else {
+                console.error('Failed to get 2D context from canvas');
+                handleError('Unable to access canvas context. Please try again.');
+            }
         } catch (error) {
             console.error('Error capturing image:', error);
             handleError('Error capturing image. Please try again.');
         }
     }, [stopCamera, handleError]);
 
-    const processImage = useCallback(async (imageBlob) => {
-        setIsProcessing(true);
-        setError('');
-
-        try {
-            // Call the parent's processing function
-            if (onReceiptImageProcess) {
-                await onReceiptImageProcess(imageBlob);
-            }
-        } catch (err) {
-            console.error('Receipt processing error:', err);
-            handleError(err.message || 'Failed to process receipt. Please try again.');
-        } finally {
-            setIsProcessing(false);
+    const { salespointUUID, identityUUID } = useParams();
+    const scanReceiptMutation = useTombolaScanReceipt({
+        onError() {
+            setError('Failed to process receipt. Please try again.');
         }
-    }, [onReceiptImageProcess, handleError]);
+    });
+    const isProcessing = scanReceiptMutation.isPending;
+    const processImage = useCallback(async (imageBlob: Blob) => {
+        if (salespointUUID && identityUUID) {
+            const payload: ITombolaScanReceiptRequest = {
+                image: imageBlob,
+                salesPointId: salespointUUID,
+                clientId: identityUUID
+            }
+            scanReceiptMutation.mutate(payload)
+        }
+        // try {
+        //     // Call the parent's processing function
+        //     if (onReceiptImageProcess) {
+        //         await onReceiptImageProcess(imageBlob);
+        //     }
+        // } catch (err: any) {
+        //     console.error('Receipt processing error:', err);
+        //     handleError(err?.message || 'Failed to process receipt. Please try again.');
+        // }
+    }, [salespointUUID, identityUUID, scanReceiptMutation]);
 
     const resetScanner = useCallback(() => {
         if (capturedImage?.url) {
@@ -246,7 +284,6 @@ const ReceiptScanner = ({
         }
         setCapturedImage(null);
         setError('');
-        setIsProcessing(false);
         stopCamera();
     }, [capturedImage, stopCamera]);
 
@@ -265,7 +302,7 @@ const ReceiptScanner = ({
                     <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 flex items-start space-x-3">
                         <AlertCircle className="text-red-500 mt-0.5" size={20} />
                         <div>
-                            <p className="text-red-800 font-medium">Error</p>
+                            {/* <p className="text-red-800 font-medium">Error</p> */}
                             <p className="text-red-600 text-sm">{error}</p>
                         </div>
                     </div>
@@ -274,7 +311,7 @@ const ReceiptScanner = ({
                 {/* Initial State - Start Scanning */}
                 {!showCamera && !capturedImage && (
                     <div className="text-center bg-white rounded-lg">
-                        <div className=" rounded-lg shadow-lg p-8 mb-6">
+                        <div className=" rounded-lg  p-8 mb-6">
                             <Camera className="mx-auto mb-4 text-blue-500" size={64} />
 
                             <button
@@ -319,14 +356,15 @@ const ReceiptScanner = ({
                                 className="w-full rounded bg-gray-900 flex-grow object-cover"
                                 // style={{ maxHeight: '730px', minHeight: '730px' }}
                                 onLoadedMetadata={(e) => {
-                                    console.log('Video metadata loaded', e.target.videoWidth, 'x', e.target.videoHeight);
+                                    const video = e.target as HTMLVideoElement;
+                                    console.log('Video metadata loaded', video?.videoWidth, 'x', video?.videoHeight);
                                     if (videoRef.current) {
                                         const playPromise = videoRef.current.play();
                                         if (playPromise !== undefined) {
                                             playPromise.then(() => {
                                                 console.log('Video playing from metadata event');
                                                 setIsVideoReady(true);
-                                            }).catch(error => {
+                                            }).catch((error: any) => {
                                                 console.error('Play from metadata failed:', error);
                                             });
                                         }
@@ -388,8 +426,10 @@ const ReceiptScanner = ({
                                     captureImage();
                                 }}
                                 disabled={!isVideoReady}
-                                className="bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-8 py-3 rounded-full font-medium flex items-center space-x-2 transition-colors"
-                            >
+                                className={`  flex w-[80px] h-[80px] p-2 rounded-full text-xs flex-col justify-center items-center  font-semibold transition-all duration-200 ${!isVideoReady
+                                    ? 'bg-blue-950 text-gray-50 cursor-not-allowed   active:bg-blue-800 shadow-lg hover:shadow-xl'
+                                    : 'bg-blue-950  text-white'
+                                    }`}                            >
                                 <Camera size={20} />
                                 <span>{captureButtonText}</span>
                             </button>
@@ -481,133 +521,133 @@ const ReceiptScanner = ({
 export default ReceiptScanner
 
 // Demo component showing how to use the reusable ReceiptScanner
-const ReceiptScannerDemo = () => {
-    const [processedReceipts, setProcessedReceipts] = useState([]);
-    const [isProcessing, setIsProcessing] = useState(false);
+// const ReceiptScannerDemo = () => {
+//     const [processedReceipts, setProcessedReceipts] = useState([]);
+//     const [isProcessing, setIsProcessing] = useState(false);
 
-    // Mock receipt processing function that the parent provides
-    const handleReceiptImageProcess = async (imageBlob) => {
-        setIsProcessing(true);
+//     // Mock receipt processing function that the parent provides
+//     const handleReceiptImageProcess = async (imageBlob) => {
+//         setIsProcessing(true);
 
-        try {
-            // Simulate API call delay
-            await new Promise(resolve => setTimeout(resolve, 2000));
+//         try {
+//             // Simulate API call delay
+//             await new Promise(resolve => setTimeout(resolve, 2000));
 
-            // Simulate random success/failure (80% success rate)
-            const isSuccess = Math.random() > 0.2;
+//             // Simulate random success/failure (80% success rate)
+//             const isSuccess = Math.random() > 0.2;
 
-            if (!isSuccess) {
-                throw new Error('Image quality too poor. Please retake the photo with better lighting and focus.');
-            }
+//             if (!isSuccess) {
+//                 throw new Error('Image quality too poor. Please retake the photo with better lighting and focus.');
+//             }
 
-            // Simulate successful receipt processing
-            const fakeReceiptData = {
-                id: Date.now(),
-                store: 'SuperMart Express',
-                address: '123 Main Street, City Center',
-                date: new Date().toLocaleDateString(),
-                time: new Date().toLocaleTimeString(),
-                receiptNumber: `R${Math.floor(Math.random() * 100000).toString().padStart(5, '0')}`,
-                items: [
-                    { name: 'Organic Bananas', quantity: 2, price: 3.98 },
-                    { name: 'Whole Milk 1L', quantity: 1, price: 2.49 },
-                    { name: 'Bread - Whole Wheat', quantity: 1, price: 2.99 },
-                    { name: 'Greek Yogurt', quantity: 3, price: 5.97 },
-                    { name: 'Chicken Breast 1kg', quantity: 1, price: 12.99 }
-                ],
-                subtotal: 28.42,
-                tax: 2.27,
-                total: 30.69,
-                paymentMethod: 'Credit Card',
-                cashier: 'Employee #' + Math.floor(Math.random() * 100),
-                processedAt: new Date().toISOString()
-            };
+//             // Simulate successful receipt processing
+//             const fakeReceiptData = {
+//                 id: Date.now(),
+//                 store: 'SuperMart Express',
+//                 address: '123 Main Street, City Center',
+//                 date: new Date().toLocaleDateString(),
+//                 time: new Date().toLocaleTimeString(),
+//                 receiptNumber: `R${Math.floor(Math.random() * 100000).toString().padStart(5, '0')}`,
+//                 items: [
+//                     { name: 'Organic Bananas', quantity: 2, price: 3.98 },
+//                     { name: 'Whole Milk 1L', quantity: 1, price: 2.49 },
+//                     { name: 'Bread - Whole Wheat', quantity: 1, price: 2.99 },
+//                     { name: 'Greek Yogurt', quantity: 3, price: 5.97 },
+//                     { name: 'Chicken Breast 1kg', quantity: 1, price: 12.99 }
+//                 ],
+//                 subtotal: 28.42,
+//                 tax: 2.27,
+//                 total: 30.69,
+//                 paymentMethod: 'Credit Card',
+//                 cashier: 'Employee #' + Math.floor(Math.random() * 100),
+//                 processedAt: new Date().toISOString()
+//             };
 
-            // Add to processed receipts list
-            setProcessedReceipts(prev => [fakeReceiptData, ...prev]);
+//             // Add to processed receipts list
+//             setProcessedReceipts(prev => [fakeReceiptData, ...prev]);
 
-            console.log('Receipt processed successfully:', fakeReceiptData);
-        } finally {
-            setIsProcessing(false);
-        }
-    };
+//             console.log('Receipt processed successfully:', fakeReceiptData);
+//         } finally {
+//             setIsProcessing(false);
+//         }
+//     };
 
-    const handleError = (errorMessage) => {
-        console.error('Receipt Scanner Error:', errorMessage);
-        // You could show a toast notification here or handle the error in other ways
-    };
+//     const handleError = (errorMessage) => {
+//         console.error('Receipt Scanner Error:', errorMessage);
+//         // You could show a toast notification here or handle the error in other ways
+//     };
 
-    return (
-        <div className="min-h-screen bg-gray-100">
-            <div className="grid lg:grid-cols-2 gap-6 h-screen">
-                {/* Receipt Scanner */}
-                <div className="overflow-y-auto">
-                    <ReceiptScanner
-                        onReceiptImageProcess={handleReceiptImageProcess}
-                        onError={handleError}
-                        className="min-h-0 bg-white"
-                        showTitle={true}
-                        title="Smart Receipt Scanner"
-                        subtitle="Scan and digitize your receipts instantly"
-                        startScanButtonText="Start Scanning Receipt"
-                        processButtonText="Extract Receipt Data"
-                    />
-                </div>
+//     return (
+//         <div className="min-h-screen bg-gray-100">
+//             <div className="grid lg:grid-cols-2 gap-6 h-screen">
+//                 {/* Receipt Scanner */}
+//                 <div className="overflow-y-auto">
+//                     <ReceiptScanner
+//                         onReceiptImageProcess={handleReceiptImageProcess}
+//                         onError={handleError}
+//                         className="min-h-0 bg-white"
+//                         showTitle={true}
+//                         title="Smart Receipt Scanner"
+//                         subtitle="Scan and digitize your receipts instantly"
+//                         startScanButtonText="Start Scanning Receipt"
+//                         processButtonText="Extract Receipt Data"
+//                     />
+//                 </div>
 
-                {/* Processed Receipts Display */}
-                <div className="p-6 overflow-y-auto bg-white">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-6">
-                        Processed Receipts ({processedReceipts.length})
-                    </h2>
+//                 {/* Processed Receipts Display */}
+//                 <div className="p-6 overflow-y-auto bg-white">
+//                     <h2 className="text-2xl font-bold text-gray-800 mb-6">
+//                         Processed Receipts ({processedReceipts.length})
+//                     </h2>
 
-                    {isProcessing && (
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4 flex items-center space-x-3">
-                            <Loader2 className="animate-spin text-blue-500" size={20} />
-                            <div>
-                                <p className="text-blue-800 font-medium">Processing Receipt</p>
-                                <p className="text-blue-600 text-sm">Extracting data from your image...</p>
-                            </div>
-                        </div>
-                    )}
+//                     {isProcessing && (
+//                         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4 flex items-center space-x-3">
+//                             <Loader2 className="animate-spin text-blue-500" size={20} />
+//                             <div>
+//                                 <p className="text-blue-800 font-medium">Processing Receipt</p>
+//                                 <p className="text-blue-600 text-sm">Extracting data from your image...</p>
+//                             </div>
+//                         </div>
+//                     )}
 
-                    {processedReceipts.length === 0 && !isProcessing && (
-                        <div className="text-center py-12">
-                            <Upload className="mx-auto mb-4 text-gray-400" size={48} />
-                            <p className="text-gray-500">No receipts processed yet.</p>
-                            <p className="text-gray-400 text-sm">Scan a receipt to get started!</p>
-                        </div>
-                    )}
+//                     {processedReceipts.length === 0 && !isProcessing && (
+//                         <div className="text-center py-12">
+//                             <Upload className="mx-auto mb-4 text-gray-400" size={48} />
+//                             <p className="text-gray-500">No receipts processed yet.</p>
+//                             <p className="text-gray-400 text-sm">Scan a receipt to get started!</p>
+//                         </div>
+//                     )}
 
-                    <div className="space-y-4">
-                        {processedReceipts.map((receipt) => (
-                            <div key={receipt.id} className="bg-gray-50 rounded-lg p-4 border">
-                                <div className="flex justify-between items-start mb-3">
-                                    <div>
-                                        <h3 className="font-semibold text-gray-800">{receipt.store}</h3>
-                                        <p className="text-sm text-gray-600">{receipt.date} • {receipt.time}</p>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="font-bold text-lg text-green-600">${receipt.total.toFixed(2)}</p>
-                                        <p className="text-xs text-gray-500">#{receipt.receiptNumber}</p>
-                                    </div>
-                                </div>
+//                     <div className="space-y-4">
+//                         {processedReceipts.map((receipt) => (
+//                             <div key={receipt.id} className="bg-gray-50 rounded-lg p-4 border">
+//                                 <div className="flex justify-between items-start mb-3">
+//                                     <div>
+//                                         <h3 className="font-semibold text-gray-800">{receipt.store}</h3>
+//                                         <p className="text-sm text-gray-600">{receipt.date} • {receipt.time}</p>
+//                                     </div>
+//                                     <div className="text-right">
+//                                         <p className="font-bold text-lg text-green-600">${receipt.total.toFixed(2)}</p>
+//                                         <p className="text-xs text-gray-500">#{receipt.receiptNumber}</p>
+//                                     </div>
+//                                 </div>
 
-                                <div className="border-t pt-3">
-                                    <p className="text-sm text-gray-600 mb-2">{receipt.items.length} items purchased</p>
-                                    <div className="grid grid-cols-2 gap-2 text-xs">
-                                        <div>
-                                            <span className="text-gray-500">Subtotal:</span> ${receipt.subtotal.toFixed(2)}
-                                        </div>
-                                        <div>
-                                            <span className="text-gray-500">Tax:</span> ${receipt.tax.toFixed(2)}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-};
+//                                 <div className="border-t pt-3">
+//                                     <p className="text-sm text-gray-600 mb-2">{receipt.items.length} items purchased</p>
+//                                     <div className="grid grid-cols-2 gap-2 text-xs">
+//                                         <div>
+//                                             <span className="text-gray-500">Subtotal:</span> ${receipt.subtotal.toFixed(2)}
+//                                         </div>
+//                                         <div>
+//                                             <span className="text-gray-500">Tax:</span> ${receipt.tax.toFixed(2)}
+//                                         </div>
+//                                     </div>
+//                                 </div>
+//                             </div>
+//                         ))}
+//                     </div>
+//                 </div>
+//             </div>
+//         </div>
+//     );
+// };
