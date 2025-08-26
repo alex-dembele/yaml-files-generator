@@ -1,39 +1,49 @@
-import { BackgroundContainer, ContinueButton } from "@/modules/shared/components"
-import carrefourPrimaryBg from '@/assets/images/carrefour-main-bg.png';
-import sloganSectionLogo from '@/assets/images/slogon-section.png';
+import { BackArrow, BackgroundContainer, ContinueButton, ProgressLine, StepCompletedCard, StepCompleteIndicator } from "@/modules/shared/components";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 const TombolaCompletePage = () => {
     const { salespointUUID } = useParams();
     const navigate = useNavigate();
+
+
+    const [progress,] = useState(100);
+
+    const handleBack = () => {
+        navigate(`/${salespointUUID}`);
+    };
+
     const handleContinue = () => {
-        navigate(`/${salespointUUID}/identity-check`);
-        // Logic to navigate to the next step or page
-        console.log("Continue button clicked");
+        navigate(`/${salespointUUID}`);
     }
 
+
     return (
-        <BackgroundContainer
-            backgroundImage={carrefourPrimaryBg}
-            overlayColor="rgba(255, 255, 255, 0.0)"
-        >
-            <div className=" flex flex-col flex-grow px-8 py-6 gap-y-7 items-center  text-center pt-24">
-                <div bg-white className=" w-full flex justify-center">
-                    <img src={sloganSectionLogo} className=" w-5/6" />
+        <BackgroundContainer>
+            <div className=" flex flex-col justify-center  flex-grow gap-y-7 px-6 pt-6 pb-6">
+                {/* Header with back arrow and step indicator */}
+                <div className="flex space-x-2 items-center">
+                    <BackArrow onBack={handleBack} />
+                    <StepCompleteIndicator />
                 </div>
-                <div >
-                    <p className="text-xl font-semibold text-white" >Participez à notre <span className="bg-blue-700 p-1">grande tombola</span> anniversaire et tentez de repartir avec des <span className="bg-blue-700 p-1">cadeaux de folie !</span> </p>
-                </div>
-                <div className="mt-3 w-full">
+
+                {/* Progress line with truck */}
+                <ProgressLine progress={progress} />
+
+                {/* Step completed card */}
+                <StepCompletedCard />
+                {/* Continue button */}
+                <div className="flex-grow flex flex-col justify-center  items-center ">
                     <ContinueButton
-                        text="Jouer maintenant"
+                        text="Retour à l’acceuil"
                         onContinue={handleContinue}
-                        disabled={false}
                     />
+
                 </div>
             </div>
         </BackgroundContainer>
-    )
+    );
+
 }
 
-export default TombolaCompletePage
+export default TombolaCompletePage;
