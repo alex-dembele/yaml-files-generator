@@ -46,7 +46,9 @@ export const local_en = {
         capture_img_preview_title: "Check your photo",
         retake_btn_text: "Retake photo",
         process_btn_text: "Processing...",
-        submit_btn_text: "Submit receipt"
+        submit_btn_text: "Submit receipt",
+        failed_to_process: "Failed to process receipt. Please try again.",
+        receipt_already_use: "This receipt has already been used."
     },
     tombola_completed: {
         back_to_home_btn: "Back to home"

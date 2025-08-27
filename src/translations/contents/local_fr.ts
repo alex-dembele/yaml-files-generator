@@ -33,8 +33,8 @@ export const local_fr = {
                 placeholder: "Entrer votre nom"
             },
             address: {
-                label: "Quel est votre adresse ?",
-                placeholder: "Entrer votre adresse"
+                label: "Quel est votre quartier de résidence?",
+                placeholder: "Entrer votre quartier"
             }
         }
     },
@@ -46,7 +46,9 @@ export const local_fr = {
         capture_img_preview_title: "Vérifiez votre photo",
         retake_btn_text: "Reprendre la photo",
         process_btn_text: "Traitement...",
-        submit_btn_text: "Envoyer le reçu"
+        submit_btn_text: "Envoyer le reçu",
+        failed_to_process: "Échec du traitement du reçu. Veuillez réessayer.",
+        receipt_already_use: "Ce reçu a déjà été utilisé."
     },
     tombola_completed: {
         back_to_home_btn: "Retour à l’acceuil"

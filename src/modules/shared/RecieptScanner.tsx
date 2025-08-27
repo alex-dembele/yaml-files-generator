@@ -255,8 +255,15 @@ const ReceiptScanner = ({
 
     const { salespointUUID, identityUUID } = useParams();
     const scanReceiptMutation = useTombolaScanReceipt({
-        onError() {
-            setError('Failed to process receipt. Please try again.');
+        onError(error: any) {
+
+            console.log(error.message);
+            if (error?.message === 'Receipt already used') {
+                setError(t('scan_reciept.receipt_already_use'));
+            } else {
+                console.log("uuuuuuuuuuuuuuuuuuuuuuuuuu")
+                setError(t('scan_reciept.failed_to_process'));
+            }
         }
     });
     const isProcessing = scanReceiptMutation.isPending;

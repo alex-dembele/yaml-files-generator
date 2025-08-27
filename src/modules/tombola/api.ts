@@ -101,19 +101,27 @@ const TombolaApi = {
                 endpoint: api_urls.get_scan_receipt_url(),
                 body: formData
             });
+
+            // Check for HTTP status 407 (duplicate entry)
+            if (res.status === 407) {
+                throw new Error("Receipt already used");
+            }
+
             const res_body = res.data as ReadResponse<ITombolaScanReceiptResponseDto>
             if (res_body.status === "OK") {
                 const res_data: ITombolaScanReceiptResponse = {
-                    isOkay: res_body.status === "OK" ? true : false,
+                    isOkay: true,
                 }
                 return res_data;
-
             } else {
-                throw new Error("Something went wrong, please try again");
+                throw new Error("Something went wrong");
             }
-
-        } catch (error) {
-            throw new Error(`Something went wrong:  ${error}`);
+        } catch (error: any) {
+            // If error message is already set, rethrow it
+            if (error instanceof Error && error.message === "Receipt already used") {
+                throw error;
+            }
+            throw new Error("Something went wrong");
         }
     },
 }
