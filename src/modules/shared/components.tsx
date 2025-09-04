@@ -3,6 +3,7 @@ import { ChevronLeft, ShoppingCart } from 'lucide-react';
 import carrefourPrimaryBg from '@/assets/images/carrefour-main-bg.png';
 import confettiImg from "@/assets/images/confettis.png";
 import { useTranslation } from 'react-i18next';
+import { ReactElement } from 'react';
 
 // 1. Background Container with Color Overlay
 export const BackgroundContainer = ({
@@ -115,6 +116,7 @@ export const InputCard = ({
     value = "",
     onChange,
     type = "text",
+    helperText,
     disabled = false
 }: any) => {
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -125,7 +127,7 @@ export const InputCard = ({
 
     return (
         <div className="bg-white rounded-2xl p-6 shadow-lg  py-10">
-            <h2 className="text-lg font-semibold text-blue-800 mb-4 text-center">
+            <h2 className="text-xl font-semibold text-blue-800 mb-4 text-center">
                 {label}
             </h2>
             <input
@@ -136,12 +138,18 @@ export const InputCard = ({
                 placeholder={placeholder}
                 className="w-full px-4 py-3 my-5 border border-gray-200 rounded-full bg-slate-50 text-center placeholder:font-bold font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 placeholder-gray-400"
             />
+            {helperText && (<span className='text-sm  text-blue-700'>{helperText}</span>)}
         </div>
     );
 };
 
 // 6. Continue Button Component
-export const ContinueButton = ({ onContinue, disabled = false, text = "Continuer" }: any) => {
+export const ContinueButton = ({ onContinue, disabled = false, icon, text = "Continuer" }: {
+    onContinue: any,
+    disabled: boolean,
+    icon?: ReactElement,
+    text?: string
+}) => {
     const { t } = useTranslation();
     return (
         <button
@@ -152,7 +160,12 @@ export const ContinueButton = ({ onContinue, disabled = false, text = "Continuer
                 : 'bg-blue-950  text-white'
                 }`}
         >
-            {text ? text : t('shared_components.continue_btn.default_text')}
+            <div className='flex items-center justify-center space-x-2'>
+                {icon && (<span>{icon}</span>)}
+                <span>
+                    {text ? text : t('shared_components.continue_btn.default_text')}
+                </span>
+            </div>
         </button>
     );
 };

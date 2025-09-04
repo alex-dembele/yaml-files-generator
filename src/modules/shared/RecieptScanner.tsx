@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useRef, useCallback } from 'react';
-import { Camera, X, AlertCircle, Upload, Loader2 } from 'lucide-react';
-import { useParams } from 'react-router-dom';
+import { Camera, X, AlertCircle, Loader2 } from 'lucide-react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useTombolaScanReceipt } from '../tombola/hooks';
 import { ITombolaScanReceiptRequest } from '../tombola/api';
 import { useTranslation } from 'react-i18next';
-
+import scanRecieptExImg from "@/assets/images/reciept_scan_ex.png";
+import { ContinueButton } from './components';
 const ReceiptScanner = ({
     // onReceiptImageProcess,
     // isProcessing = false,
@@ -254,6 +255,8 @@ const ReceiptScanner = ({
     }, [stopCamera, handleError]);
 
     const { salespointUUID, identityUUID } = useParams();
+    const navigate = useNavigate();
+
     const scanReceiptMutation = useTombolaScanReceipt({
         onError(error: any) {
 
@@ -296,6 +299,10 @@ const ReceiptScanner = ({
         stopCamera();
     }, [capturedImage, stopCamera]);
 
+    const handleNavigateToManualFillRecieptPage = () => {
+        navigate(`/${salespointUUID}/identity-check/${identityUUID}/manual-fill-reciept`)
+    }
+
     return (
         <div className={` flex flex-col flex-grow  ${className}`}>
             <div className=" -300 flex flex-col flex-grow ">
@@ -319,21 +326,18 @@ const ReceiptScanner = ({
 
                 {/* Initial State - Start Scanning */}
                 {!showCamera && !capturedImage && (
-                    <div className="text-center bg-white rounded-lg">
-                        <div className=" rounded-lg  p-8 mb-6">
-                            <Camera className="mx-auto mb-4 text-blue-500" size={64} />
-
-                            <button
-                                onClick={async () => {
+                    <div className="text-center rounded-lg">
+                        <img src={scanRecieptExImg} />
+                        <div className=" rounded-lg p-4 ">
+                            <ContinueButton
+                                icon={<Camera size={22} />}
+                                onContinue={async () => {
                                     await checkCameraPermission();
                                     await requestCameraAccess();
                                 }}
                                 disabled={permissionStatus === 'denied'}
-                                className="bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-medium flex items-center space-x-2 mx-auto transition-colors"
-                            >
-                                <Camera size={20} />
-                                <span>{t('scan_reciept.scan_btn')}</span>
-                            </button>
+                                text={t('scan_reciept.scan_btn')}
+                            />
                             {permissionStatus === 'denied' && (
                                 <p className="text-red-600 text-sm mt-2">
                                     {t('scan_reciept.required_camera_access_msg')}
@@ -429,28 +433,24 @@ const ReceiptScanner = ({
                         </div>
 
                         <div className="flex justify-center mt-4">
-                            <button
-                                onClick={() => {
-                                    console.log('Capture button clicked, video ready:', isVideoReady);
+                            <ContinueButton
+                                icon={<Camera size={22} />}
+                                onContinue={async () => {
                                     captureImage();
                                 }}
                                 disabled={!isVideoReady}
-                                className={`  flex w-[80px] h-[80px] p-2 rounded-full text-xs flex-col justify-center items-center  font-semibold transition-all duration-200 ${!isVideoReady
-                                    ? 'bg-blue-950 text-gray-50 cursor-not-allowed   active:bg-blue-800 shadow-lg hover:shadow-xl'
-                                    : 'bg-blue-950  text-white'
-                                    }`}                            >
-                                <Camera size={20} />
-                                <span>{t('scan_reciept.capture_img_text')}</span>
-                            </button>
+                                text={t('scan_reciept.scan_btn')}
+                            />
+
                         </div>
                     </div>
                 )}
 
                 {/* Captured Image Preview */}
                 {capturedImage && (
-                    <div className="bg-white rounded-lg shadow-lg p-6">
+                    <div className="bg-white rounded-lg shadow-lg p-6 flex flex-col flex-grow">
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-xl font-semibold">{t('scan_reciept.capture_img_preview_title')}</h2>
+                            <h2 className="text-xl text-blue-800 font-medium">{t('scan_reciept.capture_img_preview_title')}</h2>
                             <button
                                 onClick={resetScanner}
                                 className="text-gray-500 hover:text-gray-700 p-2"
@@ -460,14 +460,14 @@ const ReceiptScanner = ({
                             </button>
                         </div>
 
-                        <div className="text-center">
+                        <div className="text-center flex flex-grow flex-col ">
                             <img
                                 src={capturedImage.url}
                                 alt="Captured receipt"
-                                className="max-w-full max-h-96 mx-auto rounded-lg shadow-md mb-4"
+                                className="max-w-full my-auto max-h-96 mx-auto rounded-lg shadow-md "
                             />
 
-                            <div className="flex justify-center  flex-col gap-y-2">
+                            <div className="flex  justify-center  flex-col gap-y-2">
                                 <button
                                     onClick={() => {
                                         console.log('Retake photo clicked');
@@ -475,35 +475,33 @@ const ReceiptScanner = ({
                                             URL.revokeObjectURL(capturedImage.url);
                                         }
                                         setCapturedImage(null);
+                                        setError('');
                                         requestCameraAccess();
                                     }}
                                     disabled={isProcessing}
-                                    className="bg-gray-500 hover:bg-gray-600 text-center disabled:bg-gray-400 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                                    className="bg-white  text-center  text-blue-800 px-6 py-3 rounded-lg font-semibold border shadow-md transition-colors flex items-center justify-center space-x-2"
                                 >
-                                    {t('scan_reciept.retake_btn_text')}
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        console.log('Process receipt button clicked');
-                                        processImage(capturedImage.blob);
-                                    }}
-                                    disabled={isProcessing}
-                                    className="bg-green-500 hover:bg-green-600 disabled:bg-green-400 text-white px-6 py-3 rounded-lg font-medium flex items-center justify-center space-x-2 transition-colors"
-                                >
-                                    {isProcessing ? (
-                                        <>
-                                            <Loader2 className="animate-spin" size={20} />
-                                            <span>{t('scan_reciept.process_btn_text')}</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Upload size={20} />
-                                            <span>{t('scan_reciept.submit_btn_text')}</span>
-                                        </>
-                                    )}
+                                    <span><Camera size={22} /></span>
+                                    <span>{t('scan_reciept.retake_btn_text')}</span>
                                 </button>
 
-
+                                {error ? (
+                                    <ContinueButton
+                                        onContinue={handleNavigateToManualFillRecieptPage}
+                                        disabled={isProcessing}
+                                        text={t('scan_reciept.go_to_manual_fill_reciept')}
+                                    />
+                                ) : (
+                                    <ContinueButton
+                                        icon={isProcessing ? <Loader2 className="animate-spin" size={20} /> : undefined}
+                                        onContinue={async () => {
+                                            console.log('Process receipt button clicked');
+                                            processImage(capturedImage.blob);
+                                        }}
+                                        disabled={isProcessing}
+                                        text={isProcessing ? t('scan_reciept.process_btn_text') : t('scan_reciept.submit_btn_text')}
+                                    />
+                                )}
                             </div>
                         </div>
 

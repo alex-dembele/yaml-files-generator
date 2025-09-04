@@ -10,6 +10,7 @@ import TombolaCompletePage from "./pages/tombolo-complete-page";
 import { authRoutes } from "@/auth/auth.route";
 import { errorsRoutes } from "@/errors/errors.route";
 import UpdateInfoPage from "./pages/update-info-page";
+import ManualFillRecieptPage from "./pages/manual-fill-reciept-page";
 
 const routes = [
     {
@@ -22,8 +23,6 @@ const routes = [
     ...authRoutes,
 ];
 
-
-
 export default function RenderRoutes() {
     return (
         <Routes>
@@ -33,6 +32,7 @@ export default function RenderRoutes() {
                 <Route path="/:salespointUUID/identity-check" element={<IdentityCheckPage />} />
                 <Route path="/:salespointUUID/identity-check/:identityUUID/update-info" element={<UpdateInfoPage />} />
                 <Route path="/:salespointUUID/identity-check/:identityUUID/scan-receipt" element={<ScanRecieptPage />} />
+                <Route path="/:salespointUUID/identity-check/:identityUUID/manual-fill-reciept" element={<ManualFillRecieptPage />} />
                 <Route path="/:salespointUUID/identity-check/:identityUUID/tombola-complete" element={<TombolaCompletePage />} />
             </Route>
             {routes.map(route => {

@@ -1,5 +1,5 @@
 import { MutationOptions, useMutation } from '@tanstack/react-query';
-import { ITombolaScanReceiptRequest, ITombolaScanReceiptResponse } from './api';
+import { IManualFillRecieptRequest, IManualFillRecieptResponse, ITombolaScanReceiptRequest, ITombolaScanReceiptResponse } from './api';
 import { useNavigate, useParams } from 'react-router-dom';
 import TombolaApi from './api';
 
@@ -34,3 +34,26 @@ export const useTombolaScanReceipt = (
     });
 };
 
+
+export const useManualFillReciept = (
+    options?: MutationOptions<IManualFillRecieptResponse, Error, IManualFillRecieptRequest>
+) => {
+    const navigate = useNavigate();
+    const { salespointUUID, identityUUID } = useParams();
+
+    const { onSuccess: customOnSuccess, ...restOptions } = options || {};
+    return useMutation<IManualFillRecieptResponse, Error, IManualFillRecieptRequest>({
+        mutationFn: (payload) => TombolaApi.manualFillReciept(payload),
+        onSuccess: (data, variables, context) => {
+            const { is_created } = data;
+            if (is_created) {
+                navigate(`/${salespointUUID}/identity-check/${identityUUID}/tombola-complete`);
+            }
+            // Then call taxe-provided onSuccess if available
+            if (customOnSuccess) {
+                customOnSuccess(data, variables, context);
+            }
+        },
+        ...restOptions
+    });
+};

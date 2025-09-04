@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { API_CONFIG, apiClient, ReadResponse } from "@/api";
+import { API_CONFIG, apiClient, CreateResponse, ReadResponse } from "@/api";
 
 const api_urls = {
     get_scan_receipt_url: () => API_CONFIG.buildUrl(`/extract`),
+    get_manual_fill_reciept_url: () => API_CONFIG.buildUrl('/manual-field-reciept')
 
 
 };
@@ -58,7 +59,25 @@ export type ITombolaScanReceiptResponse = {
 }
 
 // ====================================================
+export type IManualFillRecieptRequestDto = {
+    transactionNo: string;
+    amount: string,
+    salesPointId: string,
+    clientId: string
+}
+export type IManualFillRecieptRequest = {
+    transactionNo: string,
+    amount: string,
+    salesPointId: string,
+    clientId: string
+}
 
+export type IManualFillRecieptResponseDto = {
+    [key: string]: string
+}
+export type IManualFillRecieptResponse = {
+    is_created: boolean
+}
 
 const TombolaApi = {
     scanReceipt: async (payload: ITombolaScanReceiptRequest): Promise<ITombolaScanReceiptResponse> => {
@@ -123,6 +142,26 @@ const TombolaApi = {
             }
             throw new Error("Something went wrong");
         }
+    },
+
+    manualFillReciept: async (payload: IManualFillRecieptRequest) => {
+        const requestDto: IManualFillRecieptRequestDto = {
+            transactionNo: payload.transactionNo,
+            amount: payload.amount,
+            salesPointId: payload.salesPointId,
+            clientId: payload.clientId
+        }
+
+        const res = await apiClient({
+            method: 'POST',
+            endpoint: api_urls.get_manual_fill_reciept_url(),
+            body: requestDto
+        });
+        const res_body = res.data as CreateResponse<IManualFillRecieptResponseDto>;
+        const res_data: IManualFillRecieptResponse = {
+            is_created: res_body.status === "OK" ? true : false
+        }
+        return res_data;
     },
 }
 

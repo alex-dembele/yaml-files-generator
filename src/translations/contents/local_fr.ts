@@ -39,16 +39,30 @@ export const local_fr = {
         }
     },
     scan_reciept: {
-        title: "Scannez votre facture",
-        scan_btn: "Scanner",
+        title: "Filmer le bas de votre ticket",
+        scan_btn: "Filmer mon ticket",
         required_camera_access_msg: "L'accès à la caméra est requis. Veuillez l'activer dans les paramètres de votre navigateur.",
         capture_img_text: "Scanner",
         capture_img_preview_title: "Vérifiez votre photo",
         retake_btn_text: "Reprendre la photo",
         process_btn_text: "Traitement...",
-        submit_btn_text: "Envoyer le reçu",
-        failed_to_process: "Échec du traitement du reçu. Veuillez réessayer.",
-        receipt_already_use: "Ce reçu a déjà été utilisé."
+        submit_btn_text: "Envoyer la photo",
+        failed_to_process: "Echec de l’opération. Veuillez réessayer !.",
+        receipt_already_use: "Ce reçu a déjà été utilisé.",
+        go_to_manual_fill_reciept: "Saisir mon numéro de ticket"
+    },
+    manual_fill_reciept: {
+        input_card: {
+            transaction_no: {
+                label: "Quel est votre numéro de transaction ?",
+                helperText: "*Il est indiqué au bas de votre ticket",
+                placeholder: "Entrez votre N° de transac"
+            },
+            amount: {
+                label: "Quel est le montant total de vos courses ?",
+                placeholder: "Entrez le montant"
+            }
+        }
     },
     tombola_completed: {
         back_to_home_btn: "Retour à l’acceuil"
