@@ -48,7 +48,7 @@ const ManualFillRecieptPage = () => {
 
     return (
         <BackgroundContainer>
-            <div className=" flex flex-col flex-grow gap-y-7 px-6 pt-6 pb-6">
+            <div className="flex flex-col flex-grow gap-y-7 px-6 pt-6 pb-6">
                 {/* Header with back arrow and step indicator */}
                 <div className="flex space-x-2 items-center">
                     <BackArrow onBack={handleBack} />

@@ -3,7 +3,7 @@ import { API_CONFIG, apiClient, CreateResponse, ReadResponse } from "@/api";
 
 const api_urls = {
     get_scan_receipt_url: () => API_CONFIG.buildUrl(`/extract`),
-    get_manual_fill_reciept_url: () => API_CONFIG.buildUrl('/manual-field-reciept')
+    get_manual_fill_reciept_url: () => API_CONFIG.buildUrl('/client-transaction-store')
 
 
 };
@@ -60,8 +60,8 @@ export type ITombolaScanReceiptResponse = {
 
 // ====================================================
 export type IManualFillRecieptRequestDto = {
-    transactionNo: string;
-    amount: string,
+    transactionId: string;
+    amount: number,
     salesPointId: string,
     clientId: string
 }
@@ -146,8 +146,8 @@ const TombolaApi = {
 
     manualFillReciept: async (payload: IManualFillRecieptRequest) => {
         const requestDto: IManualFillRecieptRequestDto = {
-            transactionNo: payload.transactionNo,
-            amount: payload.amount,
+            transactionId: payload.transactionNo,
+            amount: Number(payload.amount ?? 0),
             salesPointId: payload.salesPointId,
             clientId: payload.clientId
         }

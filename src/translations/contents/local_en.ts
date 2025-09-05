@@ -33,22 +33,36 @@ export const local_en = {
                 placeholder: "Enter your name"
             },
             address: {
-                label: "What is your address?",
-                placeholder: "Enter your address"
+                label: "What is your neighborhood of residence?",
+                placeholder: "Enter your neighborhood"
             }
         }
     },
     scan_reciept: {
-        title: "Scan your receipt",
-        scan_btn: "Scan",
+        title: "Scan the bottom of your receipt",
+        scan_btn: "Scan my receipt",
         required_camera_access_msg: "Camera access is required. Please enable it in your browser settings.",
         capture_img_text: "Scan",
         capture_img_preview_title: "Check your photo",
         retake_btn_text: "Retake photo",
         process_btn_text: "Processing...",
         submit_btn_text: "Submit receipt",
-        failed_to_process: "Failed to process receipt. Please try again.",
-        receipt_already_use: "This receipt has already been used."
+        failed_to_process: "Operation failed. Please try again!",
+        receipt_already_use: "This receipt has already been used.",
+        go_to_manual_fill_reciept: "Enter my receipt number"
+    },
+    manual_fill_reciept: {
+        input_card: {
+            transaction_no: {
+                label: "What is your transaction number?",
+                helperText: "*It is located at the bottom of your receipt",
+                placeholder: "Enter your transaction number"
+            },
+            amount: {
+                label: "What is the total amount of your purchases?",
+                placeholder: "Enter the amount"
+            }
+        }
     },
     tombola_completed: {
         back_to_home_btn: "Back to home"
