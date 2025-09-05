@@ -146,7 +146,7 @@ export const InputCard = ({
 // 6. Continue Button Component
 export const ContinueButton = ({ onContinue, disabled = false, icon, text = "Continuer" }: {
     onContinue: any,
-    disabled: boolean,
+    disabled?: boolean,
     icon?: ReactElement,
     text?: string
 }) => {
