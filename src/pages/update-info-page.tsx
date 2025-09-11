@@ -13,8 +13,8 @@ const UpdateInfoPage = () => {
     const updateInfosMutation = usePlayerUpdateInfos();
     const navigate = useNavigate();
 
-    const [currentStep, setCurrentStep] = useState(2);
-    const [progress, setProgress] = useState(50);
+    const [currentStep,] = useState(2);
+    const [progress,] = useState(50);
     const [username, setUsername] = useState("");
     const [address, setAddress] = useState("");
 
@@ -23,21 +23,17 @@ const UpdateInfoPage = () => {
     };
 
     const handleContinue = () => {
-        if (currentStep === 2) {
-            setCurrentStep(3);
-            setProgress(75);
-        } else if (currentStep === 3) {
-            if (salespointUUID && identityUUID) {
-                const payload: IPlayerUpdateInfosRequest = {
-                    name: username,
-                    address: address,
-                    salesPointId: salespointUUID,
-                    clientId: identityUUID
-                }
-                updateInfosMutation.mutate(payload);
-            }
 
+        if (salespointUUID && identityUUID) {
+            const payload: IPlayerUpdateInfosRequest = {
+                name: username,
+                address: address,
+                salesPointId: salespointUUID,
+                clientId: identityUUID
+            }
+            updateInfosMutation.mutate(payload);
         }
+
     };
 
     const handleUsernameChange = (value: string) => {
@@ -59,51 +55,37 @@ const UpdateInfoPage = () => {
 
                 {/* Progress line with truck */}
                 <ProgressLine progress={progress} />
+                <div className="bg-white rounded-2xl">
+                    <InputCard
+                        isGrouped
+                        key={"update-info-name"}
+                        label={t('update_info.input_card.username.label')}
+                        placeholder={t('update_info.input_card.username.placeholder')}
+                        value={username}
+                        onChange={handleUsernameChange}
+                    />
 
-                {currentStep === 2 && (
-                    <>
-                        <InputCard
-                            key={"update-info-name"}
-                            label={t('update_info.input_card.username.label')}
-                            placeholder={t('update_info.input_card.username.placeholder')}
-                            value={username}
-                            onChange={handleUsernameChange}
+                    <InputCard
+                        isGrouped
+                        key={"update-info-address"}
+                        label={t('update_info.input_card.address.label')}
+                        placeholder={t('update_info.input_card.address.placeholder')}
+                        value={address}
+                        onChange={handleAddressChange}
+                    />
+
+                </div>
+                <div className="flex-grow flex flex-col justify-center  items-center ">
+                    {updateInfosMutation.isPending ? (
+                        <MoonLoader size={16} />
+                    ) : (
+                        <ContinueButton
+                            text={t('update_info.btn.validate.label')}
+                            onContinue={handleContinue}
+                            disabled={!address.trim() || !username.trim()}
                         />
-
-                        <div className="flex-grow flex flex-col justify-center  items-center ">
-                            <ContinueButton
-                                onContinue={handleContinue}
-                                disabled={!username.trim()}
-                            />
-
-                        </div>
-                    </>
-                )}
-
-                {currentStep === 3 && (
-                    <>
-                        <InputCard
-                            key={"update-info-address"}
-                            label={t('update_info.input_card.address.label')}
-                            placeholder={t('update_info.input_card.address.placeholder')}
-                            value={address}
-                            onChange={handleAddressChange}
-                        />
-                        <div className="flex-grow flex flex-col justify-center  items-center ">
-                            {updateInfosMutation.isPending ? (
-                                <MoonLoader size={16} />
-                            ) : (
-                                <ContinueButton
-                                    onContinue={handleContinue}
-                                    disabled={!address.trim()}
-                                />
-                            )}
-
-
-                        </div>
-                    </>
-                )}
-
+                    )}
+                </div>
 
             </div>
         </BackgroundContainer>

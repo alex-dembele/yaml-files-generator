@@ -7,8 +7,8 @@ const ScanRecieptPage = () => {
     const navigate = useNavigate();
     const { salespointUUID } = useParams();
 
-    const [currentStep,] = useState(4);
-    const [progress,] = useState(88);
+    const [currentStep,] = useState(3);
+    const [progress,] = useState(75);
 
     const handleBack = () => {
         navigate(`/${salespointUUID}`);

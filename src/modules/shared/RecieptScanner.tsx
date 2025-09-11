@@ -308,7 +308,7 @@ const ReceiptScanner = ({
             <div className=" -300 flex flex-col flex-grow ">
                 {showTitle && (
                     <div className="text-center mb-8">
-                        <h1 className="text-xl font-bold text-gray-50 mb-2">{t('scan_reciept.title')}</h1>
+                        <h1 className="text-lg text-center font-bold text-gray-50 mb-2">{t('scan_reciept.title')}</h1>
                         {/* <p className="text-gray-600">{subtitle}</p> */}
                     </div>
                 )}

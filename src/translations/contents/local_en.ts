@@ -29,27 +29,32 @@ export const local_en = {
     update_info: {
         input_card: {
             username: {
-                label: "What is your name?",
-                placeholder: "Enter your name"
+                label: "Full name",
+                placeholder: "Enter your full name"
             },
             address: {
-                label: "What is your neighborhood of residence?",
+                label: "Neighborhood",
                 placeholder: "Enter your neighborhood"
+            }
+        },
+        btn: {
+            validate: {
+                label: "Validate"
             }
         }
     },
     scan_reciept: {
-        title: "Scan the bottom of your receipt",
+        title: "Record the bottom of your receipt, making sure the date, amount, and transaction number are clearly visible.",
         scan_btn: "Scan my receipt",
         required_camera_access_msg: "Camera access is required. Please enable it in your browser settings.",
         capture_img_text: "Scan",
         capture_img_preview_title: "Check your photo",
-        retake_btn_text: "Retake photo",
+        retake_btn_text: "Retake",
         process_btn_text: "Processing...",
-        submit_btn_text: "Submit receipt",
+        submit_btn_text: "Send",
         failed_to_process: "Operation failed. Please try again!",
         receipt_already_use: "This receipt has already been used.",
-        go_to_manual_fill_reciept: "Enter my receipt number"
+        go_to_manual_fill_reciept: "Enter my transaction number"
     },
     manual_fill_reciept: {
         input_card: {

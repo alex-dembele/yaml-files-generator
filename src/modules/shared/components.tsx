@@ -4,6 +4,7 @@ import carrefourPrimaryBg from '@/assets/images/carrefour-main-bg.png';
 import confettiImg from "@/assets/images/confettis.png";
 import { useTranslation } from 'react-i18next';
 import { ReactElement } from 'react';
+import { cn } from '@/lib/utils';
 
 // 1. Background Container with Color Overlay
 export const BackgroundContainer = ({
@@ -117,7 +118,9 @@ export const InputCard = ({
     onChange,
     type = "text",
     helperText,
-    disabled = false
+    disabled = false,
+    required = true,
+    isGrouped = false
 }: any) => {
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (onChange) {
@@ -126,17 +129,23 @@ export const InputCard = ({
     };
 
     return (
-        <div className="bg-white rounded-2xl p-6 shadow-lg  py-10">
-            <h2 className="text-xl font-semibold text-blue-800 mb-4 text-center">
+        <div className="bg-white rounded-2xl p-6   py-10">
+            <h2 className={cn(
+                'text-xl font-semibold text-blue-800 mb-4 text-center',
+                isGrouped ? 'text-left' : 'text-center')}>
                 {label}
             </h2>
             <input
+                required={required}
                 type={type}
                 value={value}
                 disabled={disabled}
                 onChange={handleInputChange}
                 placeholder={placeholder}
-                className="w-full px-4 py-3 my-5 border border-gray-200 rounded-full bg-slate-50 text-center placeholder:font-bold font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 placeholder-gray-400"
+                className={cn(
+                    "w-full px-4 py-3 border border-gray-200 rounded-full bg-slate-50  placeholder:font-bold font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 placeholder-gray-400",
+                    isGrouped ? "text-left" : "text-center my-5 "
+                )}
             />
             {helperText && (<span className='text-sm  text-blue-700'>{helperText}</span>)}
         </div>
@@ -155,7 +164,7 @@ export const ContinueButton = ({ onContinue, disabled = false, icon, text = "Con
         <button
             onClick={onContinue}
             disabled={disabled}
-            className={`w-full  block px-6 py-4 rounded-xl text-xl  font-semibold transition-all duration-200 ${disabled
+            className={`w-full  block px-6 py-4 rounded-xl text-md  font-semibold transition-all duration-200 ${disabled
                 ? 'bg-blue-950 text-gray-50 cursor-not-allowed   active:bg-blue-800 shadow-lg hover:shadow-xl'
                 : 'bg-blue-950  text-white'
                 }`}
