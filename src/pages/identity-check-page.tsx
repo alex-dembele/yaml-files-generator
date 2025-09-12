@@ -1,6 +1,6 @@
 import { BackArrow, BackgroundContainer, ContinueButton, InputCard, ProgressLine, StepIndicator } from "@/modules/shared/components";
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useCheckPlayerIdentity } from '@/modules/players/hooks'
 import { MoonLoader } from "react-spinners";
 import { IPlayerCheckIdentityRequest } from "@/modules/players/api";
@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 
 const IdentityCheckPage = () => {
     const { t } = useTranslation();
-    const { salespointUUID } = useParams();
+    // const { salespointUUID } = useParams();
     const navigate = useNavigate();
 
     const checkPlayerIdentityMutation = useCheckPlayerIdentity();
@@ -18,7 +18,7 @@ const IdentityCheckPage = () => {
     const [inputValue, setInputValue] = useState("");
 
     const handleBack = () => {
-        navigate(`/${salespointUUID}`);
+        navigate(`/`);
     };
 
     const handleContinue = () => {

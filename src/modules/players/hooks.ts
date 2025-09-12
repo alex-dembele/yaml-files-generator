@@ -1,6 +1,6 @@
 import { MutationOptions, useMutation } from '@tanstack/react-query';
 import PlayersApi, { IPlayerCheckIdentityRequest, IPlayerCheckIdentityResponse, IPlayerUpdateInfosRequest, IPlayerUpdateInfosResponse } from './api';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 /**
  * Comprehensive hook for managing payment labels data, combining pagination, query parameters, and API calls
@@ -16,16 +16,15 @@ const useCheckPlayerIdentity = (
 ) => {
     const { onSuccess: customOnSuccess, ...restOptions } = options || {};
     const navigate = useNavigate();
-    const { salespointUUID } = useParams();
     return useMutation<IPlayerCheckIdentityResponse, Error, IPlayerCheckIdentityRequest>({
         mutationFn: async (payload) => await PlayersApi.checkIdentity(payload),
         onSuccess: (data, variables, context) => {
-            const { is_new_user, uuid } = data;
-            if (is_new_user) {
-                navigate(`/${salespointUUID}/identity-check/${uuid}/update-info`);
-            } else {
-                navigate(`/${salespointUUID}/identity-check/${uuid}/scan-receipt `);
-            }
+            const { is_new_user, uuid, username, address } = data;
+
+            // ✅ Pass state along with navigation
+            navigate(`/identity-check/${uuid}`, {
+                state: { username, address, is_new_user }
+            });
             // Then call taxe-provided onSuccess if available
             if (customOnSuccess) {
                 customOnSuccess(data, variables, context);
@@ -40,7 +39,6 @@ const usePlayerUpdateInfos = (
     options?: MutationOptions<IPlayerUpdateInfosResponse, Error, IPlayerUpdateInfosRequest>
 ) => {
     const navigate = useNavigate();
-    const { salespointUUID } = useParams();
 
     const { onSuccess: customOnSuccess, ...restOptions } = options || {};
     return useMutation<IPlayerUpdateInfosResponse, Error, IPlayerUpdateInfosRequest>({
@@ -48,7 +46,7 @@ const usePlayerUpdateInfos = (
         onSuccess: (data, variables, context) => {
             const { is_created } = data;
             if (is_created) {
-                navigate(`/${salespointUUID}/identity-check/${variables.clientId}/scan-receipt `);
+                navigate(`/identity-check/${variables.clientId}/${variables.salesPointId}/scan-receipt `);
             }
             // Then call taxe-provided onSuccess if available
             if (customOnSuccess) {

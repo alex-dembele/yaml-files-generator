@@ -22,6 +22,17 @@ export const useSalespointVerifyIdentity = (uuid?: string) => {
     });
 };
 
+export const useSalesPointList = () => {
+    return useQuery({
+        queryKey: ['salespoint-list'],
+        queryFn: async () => {
+            const res_data = await SalesPointsApi.list();
+            return res_data;
+        },
+    });
+};
+
 export default {
-    useSalespointVerifyIdentity
+    useSalespointVerifyIdentity,
+    useSalesPointList
 }

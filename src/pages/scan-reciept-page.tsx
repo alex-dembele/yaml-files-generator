@@ -1,17 +1,16 @@
 import { BackArrow, BackgroundContainer, ProgressLine, StepIndicator } from "@/modules/shared/components";
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ReceiptScanner from "@/modules/shared/RecieptScanner";
 
 const ScanRecieptPage = () => {
     const navigate = useNavigate();
-    const { salespointUUID } = useParams();
 
     const [currentStep,] = useState(3);
     const [progress,] = useState(75);
 
     const handleBack = () => {
-        navigate(`/${salespointUUID}`);
+        navigate(`/identity-check`);
     };
 
     return (

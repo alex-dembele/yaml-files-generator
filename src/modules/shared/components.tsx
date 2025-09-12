@@ -110,6 +110,19 @@ export const ProgressLine = ({
     );
 };
 
+type InputCardProps = {
+    label?: string;
+    placeholder?: string;
+    value?: string;
+    onChange?: (value: string) => void;
+    type?: string;
+    helperText?: string;
+    disabled?: boolean;
+    required?: boolean;
+    isGrouped?: boolean;
+    isSelect?: boolean;
+    options?: { label: string; value: string }[];
+};
 // 5. Input Card Component
 export const InputCard = ({
     label = "Quel est votre nom ?",
@@ -120,34 +133,63 @@ export const InputCard = ({
     helperText,
     disabled = false,
     required = true,
-    isGrouped = false
-}: any) => {
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    isGrouped = false,
+    isSelect = false,
+    options = []
+}: InputCardProps) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         if (onChange) {
             onChange(e.target.value);
         }
     };
 
     return (
-        <div className="bg-white rounded-2xl p-6   py-10">
-            <h2 className={cn(
-                'text-xl font-semibold text-blue-800 mb-4 text-center',
-                isGrouped ? 'text-left' : 'text-center')}>
+        <div className="bg-white rounded-2xl p-6 py-10">
+            <h2
+                className={cn(
+                    "text-xl font-semibold text-blue-800 mb-4 text-center",
+                    isGrouped ? "text-left" : "text-center"
+                )}
+            >
                 {label}
             </h2>
-            <input
-                required={required}
-                type={type}
-                value={value}
-                disabled={disabled}
-                onChange={handleInputChange}
-                placeholder={placeholder}
-                className={cn(
-                    "w-full px-4 py-3 border border-gray-200 rounded-full bg-slate-50  placeholder:font-bold font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 placeholder-gray-400",
-                    isGrouped ? "text-left" : "text-center my-5 "
-                )}
-            />
-            {helperText && (<span className='text-sm  text-blue-700'>{helperText}</span>)}
+
+            {isSelect ? (
+                <select
+                    required={required}
+                    value={value}
+                    disabled={disabled}
+                    onChange={handleChange}
+                    className={cn(
+                        "w-full px-4 py-3 border border-gray-200 rounded-full bg-slate-50 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700",
+                        isGrouped ? "text-left" : "text-center my-5 "
+                    )}
+                >
+                    <option value="" disabled>
+                        {placeholder}
+                    </option>
+                    {options.map((opt, idx) => (
+                        <option key={idx} value={opt.value}>
+                            {opt.label}
+                        </option>
+                    ))}
+                </select>
+            ) : (
+                <input
+                    required={required}
+                    type={type}
+                    value={value}
+                    disabled={disabled}
+                    onChange={handleChange}
+                    placeholder={placeholder}
+                    className={cn(
+                        "w-full px-6 py-3 border border-gray-200 rounded-full bg-slate-50 placeholder:font-bold font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 placeholder-gray-400",
+                        isGrouped ? "text-left" : "text-center my-5 "
+                    )}
+                />
+            )}
+
+            {helperText && <span className="text-sm text-blue-700">{helperText}</span>}
         </div>
     );
 };

@@ -28,12 +28,12 @@ export default function RenderRoutes() {
         <Routes>
             <Route
                 path="/" element={<Loadable isPage component={<AppLayout />} />} >
-                <Route path="/:salespointUUID" element={<CheckSalespointPage />} />
-                <Route path="/:salespointUUID/identity-check" element={<IdentityCheckPage />} />
-                <Route path="/:salespointUUID/identity-check/:identityUUID/update-info" element={<UpdateInfoPage />} />
-                <Route path="/:salespointUUID/identity-check/:identityUUID/scan-receipt" element={<ScanRecieptPage />} />
-                <Route path="/:salespointUUID/identity-check/:identityUUID/manual-fill-reciept" element={<ManualFillRecieptPage />} />
-                <Route path="/:salespointUUID/identity-check/:identityUUID/tombola-complete" element={<TombolaCompletePage />} />
+                <Route path="/" element={<CheckSalespointPage />} />
+                <Route path="/identity-check" element={<IdentityCheckPage />} />
+                <Route path="/identity-check/:identityUUID" element={<UpdateInfoPage />} />
+                <Route path="/identity-check/:identityUUID/:salespointUUID/scan-receipt" element={<ScanRecieptPage />} />
+                <Route path="/identity-check/:identityUUID/:salespointUUID/manual-fill-reciept" element={<ManualFillRecieptPage />} />
+                <Route path="/identity-check/:identityUUID/:salespointUUID/tombola-complete" element={<TombolaCompletePage />} />
             </Route>
             {routes.map(route => {
                 return <Route path={route.path} element={route.component} key={route.name} />

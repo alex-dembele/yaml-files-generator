@@ -35,6 +35,10 @@ export const local_en = {
             address: {
                 label: "Neighborhood",
                 placeholder: "Enter your neighborhood"
+            },
+            salespoint: {
+                label: "Your supermarket",
+                placeholder: "Enter your neighbourhood"
             }
         },
         btn: {

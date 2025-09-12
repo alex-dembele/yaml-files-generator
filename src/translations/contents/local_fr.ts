@@ -35,6 +35,10 @@ export const local_fr = {
             address: {
                 label: "Quartier de résidence",
                 placeholder: "Entrer votre quartier"
+            },
+            salespoint: {
+                label: "Votre Magasin",
+                placeholder: "Sélectionner un magasin"
             }
         },
         btn: {

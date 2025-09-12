@@ -17,7 +17,7 @@ const ManualFillRecieptPage = () => {
     const [amount, setAmount] = useState("");
 
     const handleBack = () => {
-        navigate(`/${salespointUUID}/identity-check/${identityUUID}/scan-receipt`);
+        navigate(`/identity-check/${identityUUID}/${salespointUUID}/scan-receipt`);
     };
 
     const handleContinue = () => {
