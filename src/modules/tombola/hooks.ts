@@ -22,7 +22,7 @@ export const useTombolaScanReceipt = (
         onSuccess: (data, variables, context) => {
             const { isOkay } = data;
             if (isOkay) {
-                navigate(`/${salespointUUID}/identity-check/${identityUUID}/tombola-complete`);
+                navigate(`/identity-check/${identityUUID}/${salespointUUID}/tombola-complete`)
             }
             // Then call taxe-provided onSuccess if available
             if (customOnSuccess) {
@@ -47,7 +47,7 @@ export const useManualFillReciept = (
         onSuccess: (data, variables, context) => {
             const { is_created } = data;
             if (is_created) {
-                navigate(`/${salespointUUID}/identity-check/${identityUUID}/tombola-complete`);
+                navigate(`/identity-check/${identityUUID}/${salespointUUID}/tombola-complete`)
             }
             // Then call taxe-provided onSuccess if available
             if (customOnSuccess) {

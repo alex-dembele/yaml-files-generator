@@ -300,7 +300,7 @@ const ReceiptScanner = ({
     }, [capturedImage, stopCamera]);
 
     const handleNavigateToManualFillRecieptPage = () => {
-        navigate(`/${salespointUUID}/identity-check/${identityUUID}/manual-fill-reciept`)
+        navigate(`/identity-check/${identityUUID}/${salespointUUID}/manual-fill-reciept`)
     }
 
     return (
