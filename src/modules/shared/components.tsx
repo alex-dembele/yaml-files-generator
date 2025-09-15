@@ -175,18 +175,36 @@ export const InputCard = ({
                     ))}
                 </select>
             ) : (
-                <input
-                    required={required}
-                    type={type}
-                    value={value}
-                    disabled={disabled}
-                    onChange={handleChange}
-                    placeholder={placeholder}
-                    className={cn(
-                        "w-full px-6 py-3 border border-gray-200 rounded-full bg-slate-50 placeholder:font-bold font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 placeholder-gray-400",
-                        isGrouped ? "text-left" : "text-center my-5 "
-                    )}
-                />
+                type === "phone" ? (
+                    <input
+                        required={required}
+                        type={type}
+                        value={value}
+                        min={9}
+                        maxLength={12}
+                        disabled={disabled}
+                        onChange={handleChange}
+                        placeholder={placeholder}
+                        className={cn(
+                            "w-full px-6 py-3 border border-gray-200 rounded-full bg-slate-50 placeholder:font-bold font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 placeholder-gray-400",
+                            isGrouped ? "text-left" : "text-center my-5 "
+                        )}
+                    />
+                ) : (
+                    <input
+                        required={required}
+                        type={type}
+                        value={value}
+                        disabled={disabled}
+                        onChange={handleChange}
+                        placeholder={placeholder}
+                        className={cn(
+                            "w-full px-6 py-3 border border-gray-200 rounded-full bg-slate-50 placeholder:font-bold font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 placeholder-gray-400",
+                            isGrouped ? "text-left" : "text-center my-5 "
+                        )}
+                    />
+                )
+
             )}
 
             {helperText && <span className="text-sm text-blue-700">{helperText}</span>}

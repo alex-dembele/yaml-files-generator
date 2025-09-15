@@ -47,6 +47,7 @@ const IdentityCheckPage = () => {
 
                 {/* Input card */}
                 <InputCard
+                    type="number"
                     disabled={checkPlayerIdentityMutation.isPending}
                     label={t("identity_check.input_card.label")}
                     placeholder={t("identity_check.input_card.placeholder")}
