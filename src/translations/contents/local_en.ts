@@ -20,11 +20,14 @@ export const local_en = {
         step_indicator_complete: "Completed",
         step_complete_card: {
             title: "Congratulations!",
-            description: "Your participation has been successfully recorded",
+            description: 'Congratulations! Your receipt has been successfully entered into the "8  years with Carrefour" tombola. You will receive your raffle code via SMS.',
         },
         continue_btn: {
             default_text: "Continue"
         },
+        check_rule_btn: {
+            label: "View the rules"
+        }
     },
     update_info: {
         input_card: {

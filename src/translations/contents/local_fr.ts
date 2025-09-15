@@ -20,11 +20,14 @@ export const local_fr = {
         step_indicator_complete: "Terminée",
         step_complete_card: {
             title: "Félicitations !",
-            description: "Votre participation a bien été enregistrée",
+            description: "Votre ticket a bien été inscrit à la tombola ‘’8 ans avec Carrefour’’. Vous allez recevoir votre code tombola par SMS.",
         },
         continue_btn: {
             default_text: "Continuer"
         },
+        check_rule_btn: {
+            label: "Consulter le règlement"
+        }
     },
     update_info: {
         input_card: {

@@ -1,22 +1,21 @@
 import { BackArrow, BackgroundContainer, ContinueButton, ProgressLine, StepCompletedCard, StepCompleteIndicator } from "@/modules/shared/components";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const TombolaCompletePage = () => {
     const { t } = useTranslation();
-    const { salespointUUID } = useParams();
     const navigate = useNavigate();
 
 
     const [progress,] = useState(100);
 
     const handleBack = () => {
-        navigate(`/${salespointUUID}`);
+        navigate(`/`);
     };
 
     const handleContinue = () => {
-        navigate(`/${salespointUUID}`);
+        navigate(`/`);
     }
 
 

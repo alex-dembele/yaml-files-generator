@@ -1,11 +1,16 @@
-import { FC, useEffect, useRef, useState } from "react";
+import { FC } from "react";
 import { twMerge } from "tailwind-merge";
-import { CSSTransition } from 'react-transition-group';
 import { useTranslation } from "react-i18next";
-import { IoMdArrowDropdown, IoMdArrowDropup } from "react-icons/io";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import languages from "../languages";
 import { useTranslateLanguage } from "../hooks";
 import { toggleLanguage } from "../redux";
+import ReactCountryFlag from "react-country-flag"
 
 export type ToggleLanguageProps = {
     color?: string;
@@ -13,75 +18,60 @@ export type ToggleLanguageProps = {
     dropdown?: boolean
 };
 
-export const ToggleLanguage: FC<ToggleLanguageProps> = ({ color, rounded = false, dropdown }) => {
-    const [showList, setShowList] = useState(false);
-    const nodeRef = useRef<HTMLButtonElement>(null);
-
+export const ToggleLanguage: FC<ToggleLanguageProps> = ({ color, rounded = false }) => {
     const { lang, dispatch } = useTranslateLanguage();
     const { i18n } = useTranslation();
 
-
-    const handleToggleLanguageDropdown = () => {
-        setShowList((prevState) => {
-            return !prevState;
-        })
-    }
-
     const handleToggleLanguage = (selectedLanguage: ILangauge) => {
-        console.log("Change language.............")
         i18n.changeLanguage(selectedLanguage.key);
-        // setCurrentLanguage(selectedLanguage);
-        dispatch(toggleLanguage(selectedLanguage))
-        setShowList(false);
-    }
-
-    useEffect(() => {
-        console.log("Translation: current lang: ", lang)
-        i18n.changeLanguage(lang.currentLanguage.key)
-
-    }, [dispatch, lang, i18n])
-
+        dispatch(toggleLanguage(selectedLanguage));
+    };
 
     return (
-        <div
-            className="relative flex flex-col rounded-md  bg-slate-200 text-black">
-            <button
-                type="button"
-                ref={nodeRef}
-                onClick={handleToggleLanguageDropdown}
+        <DropdownMenu>
+            <DropdownMenuTrigger
                 className={twMerge(
-                    "py-2 px-2 text-left  text-sm text-dark w-full flex flex-initial  items-center relative justify-between gap-1 mr-2",
+                    "py-2 px-2 text-left text-sm text-dark w-full flex items-center justify-between gap-1 mr-2",
                     rounded ? "rounded-lg" : "rounded-sm",
+                    "bg-slate-200 hover:bg-slate-300 transition-colors"
                 )}
-                style={{ background: color ? color : "" }}
+                style={{ background: color }}
             >
-                <span className="block truncate text-sm lg:text-[0.9em]">{lang.currentLanguage.accroynm}</span>
-
-                {showList ? (<span><IoMdArrowDropup /></span>) : (<span><IoMdArrowDropdown /></span>)}
-            </button>
-            <CSSTransition
-                in={showList}
-                timeout={100}
-                classNames="fade w-full"
-                unmountOnExit
-                nodeRef={nodeRef}
-
-            >
-
-                <div className={twMerge(
-                    "absolute  bg-white    z-10  w-[200px]  rounded-md overflow-hidden text-xs text-black -translate-x-3/4  shadow-sm  border border-[#cececede]  ",
-                    dropdown ? "transform -translate-y-[100%] " : "top-[35px]"
-                )}
-                >
-                    {languages.map((language, index) => {
-                        return language.name !== lang.currentLanguage.name && (
-                            <li className="cursor-pointer hover:bg-slate-100 border-b p-2 text-sm text-nowrap" onClick={() => handleToggleLanguage(language)}
-                                key={index}>{language.name} {""} {`(${language.accroynm} )`}</li>)
-                    })}
+                <div className="flex items-center gap-2">
+                    <ReactCountryFlag
+                        countryCode={lang.currentLanguage.countryCode}
+                        svg
+                        style={{ width: '1em', height: '1em' }}
+                    />
+                    <span className="block truncate text-sm lg:text-[0.9em]">
+                        {lang.currentLanguage.accroynm}
+                    </span>
                 </div>
-            </CSSTransition>
-        </div>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent
+                align="end"
+                className="w-[200px] rounded-md bg-white border border-[#cececede]"
+            >
+                {languages.map((language, index) => (
+                    language.name !== lang.currentLanguage.name && (
+                        <DropdownMenuItem
+                            key={index}
+                            className="cursor-pointer hover:bg-slate-100 p-2 text-sm text-nowrap flex items-center gap-2"
+                            onClick={() => handleToggleLanguage(language)}
+                        >
+                            <ReactCountryFlag
+                                countryCode={language.countryCode}
+                                svg
+                                style={{ width: '1em', height: '1em' }}
+                            />
+                            <span>{language.accroynm}</span>
+                        </DropdownMenuItem>
+                    )
+                ))}
+            </DropdownMenuContent>
+        </DropdownMenu>
     );
 };
 
-export default ToggleLanguage
+export default ToggleLanguage;

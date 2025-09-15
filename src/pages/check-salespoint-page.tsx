@@ -1,4 +1,4 @@
-import { BackgroundContainer, ContinueButton } from "@/modules/shared/components"
+import { BackgroundContainer, CheckRuleButton, ContinueButton } from "@/modules/shared/components"
 import carrefourPrimaryBg from '@/assets/images/carrefour-main-bg.png';
 import sloganSectionLogo from '@/assets/images/slogon-section.png';
 import { useNavigate } from "react-router-dom";
@@ -36,12 +36,13 @@ const CheckSalespointPage = () => {
                 <div >
                     <p className="text-xl font-semibold text-white" >{t('check_salespoint.slogan_p1')} <span className="bg-blue-700 p-1">{t('check_salespoint.slogan_p2')}</span> {t('check_salespoint.slogan_p3')}<span className="bg-blue-700 p-1">{t('check_salespoint.slogan_p4')}</span> </p>
                 </div>
-                <div className="mt-3 w-full">
+                <div className="mt-3 w-full space-y-2">
                     <ContinueButton
                         text={t('check_salespoint.play_now')}
                         onContinue={handleContinue}
                         disabled={false}
                     />
+                    <CheckRuleButton />
                 </div>
             </div>
         </BackgroundContainer>

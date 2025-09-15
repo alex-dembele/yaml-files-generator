@@ -73,7 +73,7 @@ export const StepCompletedCard = () => {
                     className="w-72 mx-auto mb-4" />
             </div>
             <div>
-                <h4 className='text-gray-600'>
+                <h4 className='text-gray-400 text-center text-lg font-medium'>
                     {t('shared_components.step_complete_card.description')}
                 </h4>
             </div>
@@ -215,6 +215,24 @@ export const ContinueButton = ({ onContinue, disabled = false, icon, text = "Con
                 {icon && (<span>{icon}</span>)}
                 <span>
                     {text ? text : t('shared_components.continue_btn.default_text')}
+                </span>
+            </div>
+        </button>
+    );
+};
+
+export const CheckRuleButton = ({ text }: {
+    text?: string
+}) => {
+    const { t } = useTranslation();
+    return (
+        <button
+            onClick={() => { }}
+            className={`w-full  block px-6 py-4 rounded-xl text-md  font-semibold transition-all duration-200 bg-white text-blue-950 border border-blue-950 hover:bg-blue-50  active:bg-blue-100 shadow-lg hover:shadow-xl`}
+        >
+            <div className='flex items-center justify-center space-x-2'>
+                <span>
+                    {text ? text : t('shared_components.check_rule_btn.label')}
                 </span>
             </div>
         </button>
