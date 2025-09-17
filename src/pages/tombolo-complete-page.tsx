@@ -1,10 +1,10 @@
-import { BackArrow, BackgroundContainer, ContinueButton, ProgressLine, StepCompletedCard, StepCompleteIndicator } from "@/modules/shared/components";
+import { BackArrow, BackgroundContainer, ProgressLine, StepCompletedCard, StepCompleteIndicator } from "@/modules/shared/components";
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
+// import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 const TombolaCompletePage = () => {
-    const { t } = useTranslation();
+    // const { t } = useTranslation();
     const navigate = useNavigate();
 
 
@@ -14,9 +14,9 @@ const TombolaCompletePage = () => {
         navigate(`/`);
     };
 
-    const handleContinue = () => {
-        navigate(`/`);
-    }
+    // const handleContinue = () => {
+    //     navigate(`/`);
+    // }
 
 
     return (
@@ -34,13 +34,12 @@ const TombolaCompletePage = () => {
                 {/* Step completed card */}
                 <StepCompletedCard />
                 {/* Continue button */}
-                <div className="flex-grow flex flex-col justify-center  items-center ">
+                {/* <div className="flex-grow flex flex-col justify-center  items-center ">
                     <ContinueButton
                         text={t('tombola_completed.back_to_home_btn')}
                         onContinue={handleContinue}
                     />
-
-                </div>
+                </div> */}
             </div>
         </BackgroundContainer>
     );
