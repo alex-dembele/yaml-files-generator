@@ -4,7 +4,7 @@ import env from '@/env';
 
 export type APIResponse<T> = {
     errcode?: number
-    status: "OK" | "ERROR",
+    status: "OK" | "ERROR" | number,
     success?: boolean,
     message?: string,
     error?: string,

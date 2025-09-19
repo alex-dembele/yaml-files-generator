@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { BackArrow, BackgroundContainer, ContinueButton, InputCard, ProgressLine, StepIndicator } from "@/modules/shared/components";
 import { useManualFillReciept } from "@/modules/tombola/hooks";
+import { AlertCircle } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
@@ -8,7 +11,20 @@ import { MoonLoader } from "react-spinners";
 const ManualFillRecieptPage = () => {
     const { t } = useTranslation();
     const { salespointUUID, identityUUID } = useParams();
-    const actionMutation = useManualFillReciept();
+    const [error, setError] = useState('');
+
+    const actionMutation = useManualFillReciept({
+        onError(error: any) {
+
+            console.log(error.message);
+            if (error?.message === 'Receipt already used') {
+                setError(t('scan_reciept.receipt_already_use'));
+            } else {
+                console.log("uuuuuuuuuuuuuuuuuuuuuuuuuu")
+                setError(t('scan_reciept.failed_to_process'));
+            }
+        }
+    });
     const navigate = useNavigate();
 
     const [currentStep, setCurrentStep] = useState(3);
@@ -54,6 +70,17 @@ const ManualFillRecieptPage = () => {
                     <BackArrow onBack={handleBack} />
                     <StepIndicator currentStep={currentStep} totalSteps={4} />
                 </div>
+
+                {/* Error Display */}
+                {error && (
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 flex items-start space-x-3">
+                        <AlertCircle className="text-red-500 mt-0.5" size={20} />
+                        <div>
+                            {/* <p className="text-red-800 font-medium">Error</p> */}
+                            <p className="text-red-600 text-sm">{error}</p>
+                        </div>
+                    </div>
+                )}
 
                 {/* Progress line with truck */}
                 <ProgressLine progress={progress} />

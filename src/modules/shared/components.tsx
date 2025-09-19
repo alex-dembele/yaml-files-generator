@@ -239,19 +239,17 @@ export const ContinueButton = ({ onContinue, disabled = false, icon, text = "Con
     );
 };
 
-export const CheckRuleButton = ({ text }: {
-    text?: string
-}) => {
+export const CheckRuleButton = ({ text }: { text?: string }) => {
     const { t } = useTranslation();
+    const pdfUrl = "https://carrefour.cm/wp-content/uploads/2025/09/REGLEMENT-TOMBOLA-CARREFOUR-8-ANS-DEJA_DOUALA-YAOUNDE.pdf";
+
     return (
         <button
-            onClick={() => { }}
-            className={`w-full  block px-6 py-4 rounded-xl text-md  font-semibold transition-all duration-200 bg-white text-blue-950 border border-blue-950 hover:bg-blue-50  active:bg-blue-100 shadow-lg hover:shadow-xl`}
+            onClick={() => window.open(pdfUrl, "_blank")}
+            className={`w-full block px-6 py-4 rounded-xl text-md font-semibold transition-all duration-200 bg-white text-blue-950 border border-blue-950 hover:bg-blue-50 active:bg-blue-100 shadow-lg hover:shadow-xl`}
         >
-            <div className='flex items-center justify-center space-x-2'>
-                <span>
-                    {text ? text : t('shared_components.check_rule_btn.label')}
-                </span>
+            <div className="flex items-center justify-center space-x-2">
+                <span>{text ? text : t("shared_components.check_rule_btn.label")}</span>
             </div>
         </button>
     );

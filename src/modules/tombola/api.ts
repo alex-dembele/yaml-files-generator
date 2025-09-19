@@ -132,7 +132,11 @@ const TombolaApi = {
                     isOkay: true,
                 }
                 return res_data;
-            } else {
+            }
+            else if (res_body.status === 407) {
+                throw new Error("Receipt already used");
+            }
+            else {
                 throw new Error("Something went wrong");
             }
         } catch (error: any) {
@@ -145,23 +149,46 @@ const TombolaApi = {
     },
 
     manualFillReciept: async (payload: IManualFillRecieptRequest) => {
-        const requestDto: IManualFillRecieptRequestDto = {
-            transactionId: payload.transactionNo,
-            amount: Number(payload.amount ?? 0),
-            salesPointId: payload.salesPointId,
-            clientId: payload.clientId
+        try {
+            const requestDto: IManualFillRecieptRequestDto = {
+                transactionId: payload.transactionNo,
+                amount: Number(payload.amount ?? 0),
+                salesPointId: payload.salesPointId,
+                clientId: payload.clientId
+            }
+
+            const res = await apiClient({
+                method: 'POST',
+                endpoint: api_urls.get_manual_fill_reciept_url(),
+                body: requestDto
+            });
+
+            // Check for HTTP status 407 (duplicate entry)
+
+
+            const res_body = res.data as CreateResponse<IManualFillRecieptResponseDto>;
+
+
+            if (res_body.status === "OK") {
+                const res_data: IManualFillRecieptResponse = {
+                    is_created: true,
+                }
+                return res_data;
+            }
+            else if (res_body.status === 407) {
+                throw new Error("Receipt already used");
+            }
+            else {
+                throw new Error("Something went wrong");
+            }
+        } catch (error) {
+            // If error message is already set, rethrow it
+            if (error instanceof Error && error.message === "Receipt already used") {
+                throw error;
+            }
+            throw new Error("Something went wrong")
         }
 
-        const res = await apiClient({
-            method: 'POST',
-            endpoint: api_urls.get_manual_fill_reciept_url(),
-            body: requestDto
-        });
-        const res_body = res.data as CreateResponse<IManualFillRecieptResponseDto>;
-        const res_data: IManualFillRecieptResponse = {
-            is_created: res_body.status === "OK" ? true : false
-        }
-        return res_data;
     },
 }
 
