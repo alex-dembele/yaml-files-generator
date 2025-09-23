@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ChevronLeft, ShoppingCart } from 'lucide-react';
-import carrefourPrimaryBg from '@/assets/images/carrefour-main-bg.png';
+import carrefourPrimaryBg from '@/assets/images/carrefour-secondary-bg.png';
 import confettiImg from "@/assets/images/confettis.png";
 import { useTranslation } from 'react-i18next';
 import { ReactElement } from 'react';
@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 // 1. Background Container with Color Overlay
 export const BackgroundContainer = ({
     backgroundImage = carrefourPrimaryBg,
-    overlayColor = "rgba(0, 174, 239, 0.7)",
+    // overlayColor = "rgba(0, 174, 239, 0.7)",
     children
 }: any) => {
     return (
@@ -19,7 +19,7 @@ export const BackgroundContainer = ({
         >
             <div
                 className="absolute inset-0"
-                style={{ backgroundColor: overlayColor }}
+            // style={{ backgroundColor: overlayColor }}
             />
             <div className="relative z-10 flex flex-col flex-grow ">
                 {children}
@@ -147,7 +147,7 @@ export const InputCard = ({
         <div className="bg-white rounded-2xl p-6 py-10">
             <h2
                 className={cn(
-                    "text-xl font-semibold text-blue-800 mb-4 text-center",
+                    "text-lg font-semibold text-blue-800 mb-4 text-center",
                     isGrouped ? "text-left" : "text-center"
                 )}
             >
