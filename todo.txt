@@ -1,35 +1,102 @@
-Now after selecting a service, case of bulkpayment here we have the page that show the service detail on the header and the list of information required for the process, take note that not all data has a template document has  to be  downloaded by the user , fill inorder to upload later, some are just input fileds. so it required infor has for now 2 type a document or an input field. make sure to implement the types and also the list of required documents comes from the api so use fake data and use the screenshoot provided.
+I want to build a web application that would permit the generation of the k8 application yml files ie the values and the secret files, i will provide you with template and explain to you guide you on how the architecture is structure for you to come out with a good react vite application that will manage that after entering the required data in the form and generating the diffrerent scripts on the left for the user to copy the files and take note that the file should have the name of the project(genericName).
 
-Workflow
-login
-get-user-org-onboardings
-if(get-user-org-onboardings === 0) {
-    show welcome message and list service to which he can perform an onboardings
-} else {
-    show user's services to which he has onboard with thier status is there are complete, in-progress, pending-validations and a button to add new a new onboarding to his list
-    ----> clicking on the add new onboarding will show a page with all services where he has no onboarding yet and from there selecting a service proceed to the step to showing him required documents and so on
-}
-==========================================================================
+Here is the content of the value.yml file for a demo project, take note that the file has the name nxh-[genericName]-ms-values.yml and this is the content that can be generated
 
-Am tryna to implement the rendering of a transaction, currently here is the given component and take not that a transaction has 4 status ie, CREATED, PENDING, REJECTED and APPROVED, and here is the interface,
+# This file contains Helm values for the microservice
 
-export type ITransaction = {
-    id: number,
-    status: "PENDING" | "CREATED" | "REJECTED" | "APPROVED",
-    submit_document?: string,
-    document: IDocument,
-}
 
-export type IDocument = {
-    id: string;
-    name: string;
 
-   template_url: string,     type: 'document' | 'input';     description?: string;     hasTemplate?: boolean;     required: boolean;     inputType?: 'text' | 'email' | 'tel' | 'textarea';     placeholder?: string; }
+# Says if the service is used by NEXAH for internal (For NEXAH only) or external (For customers) purpose
+isInternalService: false
 
-When the status is at CREATED, the user can enter filled submit_document, but this depend of the type of document to entered, when its a document, he can upload a file (This operation is independent and return the file url in the data response), later run he can submit the update transaction to change its status to PENDING, when its a file with a tempate, he can download the document template and later on upload the file and the procedure works the same, Also, when its a input, he has the  input text to fill and still click on a button to update the transaction and its status changing to PENDING and also the user has the possiblity to view what he uploaded,
+# Domain name used to deploy this service.
+dns: nexah.net
 
-Take note about the feature to download the template document since its a template_url that is behind the button and it should download the file when the user wants to download the file.
+application:
 
-Now on the otherside, the admin will want to validate the transaction which status is Pending by having to view it and choose whether to reject or approved it.
+  # Application generic name. This generic name will be used to create other names by
+  # concatenation of this generic name with information like prefix 'nxh', suffix 'dev'
+  # and other information
+  genericName: abc-finance-recommend-web-admin
 
-Make sure to structure the components and the process as explained
+  # Application tier. Different tiers are : 'frontend' and 'backend'
+  tier: backend
+
+  # Application role Different roles are : 'api', 'db', 'web' or 'mobile'
+  role: web
+
+  # For now, NEXAH has 4 categories of applications:
+  # 1. Core Applications (core): Applications that are essential for the core functionality of the system and for other applications. Ex: argocd, cert-manager, external-dns, etc.
+  # 2. Nexah Applications (nexah): Applications that are developed and maintained by NEXAH.
+  # 3. AI Applications (ai): Applications that are related to artificial intelligence and machine learning.
+  # 4. Business Applications (business): Applications that are related to business operations and processes, but not developed by NEXAH. Ex: Postfix
+
+  # Application category. Different categories are : 'core', 'nexah', 'ai' or 'business'
+  category: nexah
+  
+container:
+
+  # Container image. Give the container image with  its tag
+  image: nexah/generic-recommend-web-admin:1.0.2
+  
+  # Says if the service needs to connect to the database.
+secretEnvironmentVariables: 
+  Enabled: false  # Set to false if this service doesn't require a database
+  
+  Keys:
+  - NXH_API_BASE_URL
+  - NXH_APP_ID
+  - NXH_AUTH_BASE_URL
+  - NXH_APP_BASE_URL
+  - NXH_APP_NAME
+  - NXH_APP_USE_MOCK_API
+  - NXH_APP_COLOR_PRIMARY_DEFAULT
+  - NXH_APP_COLOR_SECONDARY_DEFAULT
+  - NXH_APP_LOGO_URL
+  - NXH_APP_BACKGROUND_URL
+
+
+The user should have the possibility of
+- choosing the tyoe of service isInternalService, true or false
+- should take the genericName as input also that will help to generate the name of the file
+- ask the use to choose the tier , frontend or backend
+- ask to choose the role
+- ask the link of the docker image with the tag
+- user can enter dynamic number of  Key values environmental variables (Take note about the values of the key, the user enter the values and the script generate the value.yml file with the keys and the values will be manage in the other file for the secret)
+
+
+Now lets move to the generation of the secret yml file below is an example of the secret of a project. the file is nxh-billing-api-db-secr-dev.yml, where
+we have something like this nxh-[genericName]-db-secr-[environment].yml file name that will be generated. 
+Take note that this file content  has the dynamic key values of the env provided by the user that will be generated that are encoded to base 64 
+Below is the content of the file
+
+
+apiVersion: v1
+kind: Secret
+metadata:
+  # name: the values is also the same values as the name of the file
+  name: nxh-billing-api-db-secr-dev
+
+
+  # namespace: nxh-external-services-ns-dev or nxh-internal-services-ns-dev, so the user should select
+  namespace: nxh-internal-services-ns-dev
+
+type: Opaque
+data:
+  NXH_DATABASE_HOST: bnhoLW5leGFoLXJkcy1kZXYuY3NycjNyZ252amZ0LnVzLWVhc3QtMS5yZHMuYW1hem9uYXdzLmNvbQ==  # Replace with your MySQL host name or service in Base 64
+  NXH_DATABASE_PORT: MzMwNg==            # MySQL default port in Base 64
+  NXH_DATABASE_NAME: YmlsbGluZ19kYg==       # Replace with your MySQL database name in Base 64
+  NXH_DATABASE_USER: YWRtaW4=       # Replace with your MySQL database user in Base 64
+  NXH_DATABASE_PASSWORD: bmV4YWgxMjM=   # Replace with your MySQL database password in Base 64
+  NXH_AWS_ACCESS_KEY_ID: QUtJQTNFSExLUU83T0FTREtRRk4=
+  NXH_AWS_SECRET_ACCESS_KEY: WDRtTVd3LzNIbzh6WjrjOHlKeUFRNkwrbU10cXFoNWNlNDlab3V0Mw==
+  NXH_AWS_DEFAULT_REGION: dXMtZuFzdC0y
+  NXH_AWS_BUCKET: bnhoLXBpYw==
+  NXH_AWS_USE_PATH_STYLE_ENDPOINT: ZmFsclU=
+
+ 
+  # "echo -n 'parameter' | base64" to put in base 64
+
+
+
+  Take note that when the user says something like create application, he enters the required information and clicks on generated, it should generate 2 files with the dynamics names as explained and asked the user to download it

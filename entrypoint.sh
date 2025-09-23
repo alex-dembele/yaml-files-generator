@@ -25,7 +25,7 @@ export NXH_API_BASE_URL="${NXH_API_BASE_URL:-https://billing-api.stag.nexah.net/
 
 
 # Replace placeholders
-replace_placeholders
+# replace_placeholders
 
 echo "Starting Nginx..."
 

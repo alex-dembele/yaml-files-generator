@@ -1,0 +1,107 @@
+.file-download {
+    margin-top: 20px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.file-download h3 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 1.2rem;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 8px;
+}
+
+.download-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.download-buttons button {
+    padding: 12px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.download-buttons button:first-child {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+}
+
+.download-buttons button:first-child:hover {
+    background: linear-gradient(135deg, #218838, #1e9e8a);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+}
+
+.download-buttons button:nth-child(2) {
+    background: linear-gradient(135deg, #dc3545, #e83e8c);
+    color: white;
+}
+
+.download-buttons button:nth-child(2):hover {
+    background: linear-gradient(135deg, #c82333, #d91a7a);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+}
+
+.download-all {
+    background: linear-gradient(135deg, #007bff, #0056b3) !important;
+    color: white;
+    margin-top: 8px !important;
+}
+
+.download-all:hover {
+    background: linear-gradient(135deg, #0056b3, #004085) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+.download-buttons button:active {
+    transform: translateY(0);
+}
+
+/* Icon styles (you can add Font Awesome or other icons later) */
+.download-buttons button::before {
+    content: "↓";
+    font-weight: bold;
+}
+
+.download-all::before {
+    content: "📦";
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .file-download {
+        padding: 15px;
+    }
+
+    .download-buttons button {
+        padding: 10px 14px;
+        font-size: 13px;
+    }
+}
+
+/* Loading state */
+.download-buttons button:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.download-buttons button:disabled:hover {
+    box-shadow: none;
+    transform: none;
+}

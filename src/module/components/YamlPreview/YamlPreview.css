@@ -1,0 +1,199 @@
+.yaml-preview {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.yaml-preview h2 {
+    margin: 0;
+    padding: 20px;
+    background: linear-gradient(135deg, #343a40, #495057);
+    color: white;
+    font-size: 1.3rem;
+}
+
+.tabs {
+    display: flex;
+    border-bottom: 1px solid #dee2e6;
+    background: #f8f9fa;
+}
+
+.tabs button {
+    flex: 1;
+    padding: 12px 16px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: #495057;
+    transition: all 0.3s ease;
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tabs button:hover {
+    background: #e9ecef;
+    color: #007bff;
+}
+
+.tabs button.active {
+    color: #007bff;
+    border-bottom-color: #007bff;
+    background: #fff;
+}
+
+.preview-content {
+    padding: 20px;
+    min-height: 300px;
+}
+
+.preview-content pre {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 16px;
+    margin: 0;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 13px;
+    line-height: 1.4;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* Syntax highlighting for YAML */
+.preview-content pre {
+    color: #24292e;
+}
+
+.preview-content pre .comment {
+    color: #6a737d;
+    font-style: italic;
+}
+
+.copy-btn {
+    background: linear-gradient(135deg, #17a2b8, #138496);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.copy-btn:hover {
+    background: linear-gradient(135deg, #138496, #117a8b);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(23, 162, 184, 0.3);
+}
+
+.copy-btn:active {
+    transform: translateY(0);
+}
+
+.copy-btn.copied {
+    background: linear-gradient(135deg, #28a745, #20c997);
+}
+
+.copy-btn.copied::after {
+    content: " ✓";
+    font-weight: bold;
+}
+
+/* Scrollbar styling for the code preview */
+.preview-content pre::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.preview-content pre::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.preview-content pre::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.preview-content pre::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .yaml-preview h2 {
+        padding: 15px;
+        font-size: 1.1rem;
+    }
+
+    .tabs {
+        flex-direction: column;
+    }
+
+    .tabs button {
+        padding: 10px 12px;
+        text-align: left;
+        border-bottom: 1px solid #dee2e6;
+        border-left: 3px solid transparent;
+    }
+
+    .tabs button.active {
+        border-left-color: #007bff;
+        border-bottom-color: #dee2e6;
+    }
+
+    .preview-content {
+        padding: 15px;
+    }
+
+    .preview-content pre {
+        font-size: 12px;
+        padding: 12px;
+    }
+}
+
+/* Animation for tab switching */
+.preview-content {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* File name display */
+.tabs button::after {
+    content: attr(data-filename);
+    display: block;
+    font-size: 11px;
+    font-weight: normal;
+    color: #6c757d;
+    margin-top: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tabs button.active::after {
+    color: #a0d2ff;
+}
