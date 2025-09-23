@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import FormGenerator from './components/FormGenerator/FormGenerator';
 import YamlPreview from './components/YamlPreview/YamlPreview';
 import FileDownload from './components/FileDownload/FileDownload';
