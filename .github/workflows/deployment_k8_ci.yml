@@ -47,8 +47,8 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64/v8
           tags: |
-            nexah/tombola-carrefour-web:${{ env.next_version }}
-            nexah/tombola-carrefour-web:latest
+            nexah/k8-yml-generator-web:${{ env.next_version }}
+            nexah/k8-yml-generator-web:latest
           push: true
 
       - name: Create Git Tag
